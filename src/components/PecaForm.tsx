@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { z } from "zod";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
 import { autenticidadeLabel, estadoLabel, raridadeLabel, slugify } from "@/lib/collection";
 import { Input } from "@/components/ui/input";
