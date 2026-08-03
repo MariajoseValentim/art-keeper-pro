@@ -255,17 +255,25 @@ export function PecaForm({
         />
         Tornar esta peça visível publicamente (partilha por slug)
       </label>
+      </fieldset>
 
-      <div className="flex flex-wrap gap-3">
-        <Button type="submit" disabled={ocupado}>
-          Guardar peça
-        </Button>
-        {onDelete ? (
-          <Button type="button" variant="outline" disabled={ocupado} onClick={onDelete}>
-            Eliminar
+      {soLeitura ? (
+        <p className="text-sm text-muted-foreground">
+          Consulta apenas — só administradores podem editar ou eliminar peças.
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-3">
+          <Button type="submit" disabled={ocupado}>
+            Guardar peça
           </Button>
-        ) : null}
-      </div>
+          {onDelete ? (
+            <Button type="button" variant="outline" disabled={ocupado} onClick={onDelete}>
+              Eliminar
+            </Button>
+          ) : null}
+        </div>
+      )}
     </form>
+
   );
 }
