@@ -73,6 +73,10 @@ function ColecaoConteudo() {
           ))}
         </div>
       )}
+      <div className="mt-12">
+        <ImportarExportar pecas={pecas} categorias={categorias} podeImportar={isAdmin} />
+      </div>
+
     </AppShell>
   );
 }
