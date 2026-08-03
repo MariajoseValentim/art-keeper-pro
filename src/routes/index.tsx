@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 import { listPecasPublicas, type PecaPublica } from "@/lib/public.functions";
+import logoAsset from "@/assets/timeless-treasures.webp.asset.json";
+
 
 export const Route = createFileRoute("/")({
   loader: () => listPecasPublicas(),
@@ -41,6 +43,18 @@ function Inicio() {
 
   return (
     <AppShell>
+      <header className="mb-12 flex flex-col items-center text-center">
+        <img
+          src={logoAsset.url}
+          alt="Logotipo Timeless Treasures"
+          className="w-full max-w-md"
+        />
+        
+        <p className="mt-6 font-display text-2xl italic text-accent sm:text-3xl">
+          Old things are never out of style.
+        </p>
+      </header>
+
       <PageTitle
         eyebrow="Curadoria digital"
         title="A sua coleção, tratada como um museu"
@@ -54,6 +68,7 @@ function Inicio() {
           </Link>
         }
       />
+
 
       <div className="grid gap-4 sm:grid-cols-3">
         {[
