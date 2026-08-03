@@ -86,6 +86,71 @@ export function extensao(nome: string) {
 
 export const EXTENSOES_TEXTO = ["pdf", "docx", "doc", "txt", "md", "rtf"];
 
+type ItemTextoPdf = {
+  str?: string;
+  hasEOL?: boolean;
+  transform?: number[];
+  width?: number;
+};
+
+/**
+ * O PDF.js devolve frequentemente cada palavra como um elemento isolado e sem
+ * `hasEOL`. Reagrupamos os elementos pela coordenada vertical para preservar
+ * as linhas "Etiqueta: valor" que o importador reconhece.
+ */
+function linhasDaPaginaPdf(items: ItemTextoPdf[]): string[] {
+  const posicionados = items.filter(
+    (item) => item.str?.trim() && item.transform && item.transform.length >= 6,
+  );
+
+  if (!posicionados.length) {
+    const linhas: string[] = [];
+    let linha = "";
+    for (const item of items) {
+      const texto = item.str ?? "";
+      linha += linha && texto && !/^\s/.test(texto) ? ` ${texto}` : texto;
+      if (item.hasEOL) {
+        if (linha.trim()) linhas.push(linha.trim());
+        linha = "";
+      }
+    }
+    if (linha.trim()) linhas.push(linha.trim());
+    return linhas;
+  }
+
+  const linhas: { y: number; items: ItemTextoPdf[] }[] = [];
+  for (const item of posicionados) {
+    const y = item.transform?.[5] ?? 0;
+    const existente = linhas.find((linha) => Math.abs(linha.y - y) <= 2);
+    if (existente) existente.items.push(item);
+    else linhas.push({ y, items: [item] });
+  }
+
+  return linhas
+    .sort((a, b) => b.y - a.y)
+    .map((linha) => {
+      const ordenados = linha.items.sort(
+        (a, b) => (a.transform?.[4] ?? 0) - (b.transform?.[4] ?? 0),
+      );
+      let resultado = "";
+      let fimAnterior: number | null = null;
+      for (const item of ordenados) {
+        const texto = item.str ?? "";
+        const x = item.transform?.[4] ?? 0;
+        const precisaEspaco =
+          resultado.length > 0 &&
+          !resultado.endsWith(" ") &&
+          !texto.startsWith(" ") &&
+          fimAnterior != null &&
+          x - fimAnterior > 1;
+        resultado += `${precisaEspaco ? " " : ""}${texto}`;
+        fimAnterior = x + (item.width ?? 0);
+      }
+      return resultado.trim();
+    })
+    .filter(Boolean);
+}
+
 /** Lê o texto de um ficheiro PDF, Word ou de texto simples. */
 export async function extrairTexto(ficheiro: File): Promise<string> {
   const ext = extensao(ficheiro.name);
@@ -99,22 +164,23 @@ export async function extrairTexto(ficheiro: File): Promise<string> {
     for (let n = 1; n <= doc.numPages; n++) {
       const pagina = await doc.getPage(n);
       const conteudo = await pagina.getTextContent();
-      let linha = "";
-      const linhas: string[] = [];
-      for (const item of conteudo.items as { str?: string; hasEOL?: boolean }[]) {
-        linha += item.str ?? "";
-        if (item.hasEOL) {
-          linhas.push(linha);
-          linha = "";
-        }
-      }
-      if (linha) linhas.push(linha);
+      const linhas = linhasDaPaginaPdf(conteudo.items as ItemTextoPdf[]);
       paginas.push(linhas.join("\n"));
     }
-    return paginas.join("\n\n@@PAGINA@@\n\n");
+    const texto = paginas.join("\n\n@@PAGINA@@\n\n").trim();
+    if (!texto) {
+      throw new Error(
+        "O PDF não contém texto selecionável. Se for uma digitalização, aplique OCR antes de importar.",
+      );
+    }
+    return texto;
   }
 
-  if (ext === "docx" || ext === "doc") {
+  if (ext === "doc") {
+    throw new Error("O formato Word antigo .doc não é suportado. Guarde o documento como .docx e tente novamente.");
+  }
+
+  if (ext === "docx") {
     const mammoth = await import("mammoth/mammoth.browser");
     const { value } = await mammoth.extractRawText({ arrayBuffer: await ficheiro.arrayBuffer() });
     return value;
@@ -138,8 +204,14 @@ export function textoParaRegistos(texto: string): Record<string, string>[] {
   const registos: Record<string, string>[] = [];
 
   for (const bloco of blocos) {
-    const registo: Record<string, string> = {};
+    let registo: Record<string, string> = {};
     let ultima: string | null = null;
+
+    const guardar = () => {
+      if (registo["titulo"]) registos.push(registo);
+      registo = {};
+      ultima = null;
+    };
 
     for (const linhaBruta of bloco.split("\n")) {
       const linha = linhaBruta.trim();
@@ -147,6 +219,9 @@ export function textoParaRegistos(texto: string): Record<string, string>[] {
       const par = linha.match(/^([^:]{2,40}?)\s*[:\u2013-]\s+(.*)$/) ?? linha.match(/^([^:]{2,40}?):\s*(.*)$/);
       const chave = par ? ALIAS[SEM_ACENTOS(par[1] ?? "")] : undefined;
       if (par && chave) {
+        // Muitos documentos têm várias fichas seguidas sem página em branco.
+        // Uma segunda etiqueta de título inicia inequivocamente uma nova peça.
+        if (chave === "titulo" && registo["titulo"]) guardar();
         registo[chave] = registo[chave] ? `${registo[chave]} ${par[2]}`.trim() : (par[2] ?? "").trim();
         ultima = chave;
       } else if (ultima) {
@@ -157,7 +232,7 @@ export function textoParaRegistos(texto: string): Record<string, string>[] {
       }
     }
 
-    if (registo["titulo"]) registos.push(registo);
+    guardar();
   }
 
   return registos;
