@@ -50,6 +50,14 @@ function Chip({
 }
 
 function Pesquisa() {
+  return (
+    <ApenasEquipa>
+      <PesquisaConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function PesquisaConteudo() {
   const { data: pecas = [] } = useQuery(pecasQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
   const [texto, setTexto] = useState("");
