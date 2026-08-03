@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AppShell, PageTitle } from "@/components/AppShell";
+import { ApenasEquipa } from "@/components/ApenasEquipa";
+import { useAuth } from "@/hooks/useAuth";
 import { PecaForm, type PecaFormValues } from "@/components/PecaForm";
 import { MediaPeca } from "@/components/MediaPeca";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,11 +27,21 @@ export const Route = createFileRoute("/_authenticated/peca/$id")({
 });
 
 function FichaPeca() {
+  return (
+    <ApenasEquipa>
+      <FichaPecaConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function FichaPecaConteudo() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
   const { data: peca, isLoading } = useQuery(pecaQuery(id));
   const { data: categorias = [] } = useQuery(categoriasQuery());
+
 
   const guardar = useMutation({
     mutationFn: async (values: PecaFormValues) => {
@@ -103,14 +115,19 @@ function FichaPeca() {
       <PecaForm
         peca={peca}
         categorias={categorias}
+        soLeitura={!isAdmin}
         ocupado={guardar.isPending || eliminar.isPending}
         onSubmit={(values) => guardar.mutate(values)}
-        onDelete={() => {
-          if (confirm("Eliminar definitivamente esta peça?")) eliminar.mutate();
-        }}
+        {...(isAdmin
+          ? {
+              onDelete: () => {
+                if (confirm("Eliminar definitivamente esta peça?")) eliminar.mutate();
+              },
+            }
+          : {})}
       />
       <div className="mt-10">
-        <MediaPeca pecaId={peca.id} />
+        <MediaPeca pecaId={peca.id} soLeitura={!isAdmin} />
       </div>
     </AppShell>
   );

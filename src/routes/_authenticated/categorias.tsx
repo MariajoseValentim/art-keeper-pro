@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell, PageTitle } from "@/components/AppShell";
+import { ApenasEquipa } from "@/components/ApenasEquipa";
+import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,11 +29,21 @@ export const Route = createFileRoute("/_authenticated/categorias")({
 });
 
 function Categorias() {
+  return (
+    <ApenasEquipa>
+      <CategoriasConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function CategoriasConteudo() {
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
   const { data: categorias = [] } = useQuery(categoriasQuery());
   const { data: pecas = [] } = useQuery(pecasQuery());
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
+
 
   const criar = useMutation({
     mutationFn: async () => {
@@ -88,37 +100,44 @@ function Categorias() {
         description="Estrutura de classificação usada em toda a plataforma — fichas, dossiês e pesquisa avançada."
       />
 
-      <form
-        className="plate mb-10 grid gap-4 p-6 md:grid-cols-[1fr_1.4fr_auto] md:items-end"
-        onSubmit={(e) => {
-          e.preventDefault();
-          criar.mutate();
-        }}
-      >
-        <div className="space-y-2">
-          <label htmlFor="nome" className="label-caps">
-            Nome
-          </label>
-          <Input id="nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="descricao" className="label-caps">
-            Descrição
-          </label>
-          <Input
-            id="descricao"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            placeholder="Óleo, têmpera e técnicas mistas…"
-          />
-        </div>
-        <Button type="submit" disabled={criar.isPending}>
-          Adicionar
-        </Button>
-      </form>
+      {isAdmin ? (
+        <form
+          className="plate mb-10 grid gap-4 p-6 md:grid-cols-[1fr_1.4fr_auto] md:items-end"
+          onSubmit={(e) => {
+            e.preventDefault();
+            criar.mutate();
+          }}
+        >
+          <div className="space-y-2">
+            <label htmlFor="nome" className="label-caps">
+              Nome
+            </label>
+            <Input id="nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="descricao" className="label-caps">
+              Descrição
+            </label>
+            <Input
+              id="descricao"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Óleo, têmpera e técnicas mistas…"
+            />
+          </div>
+          <Button type="submit" disabled={criar.isPending}>
+            Adicionar
+          </Button>
+        </form>
+      ) : (
+        <p className="plate mb-10 p-6 text-sm text-muted-foreground">
+          Consulta apenas — só administradores podem criar ou eliminar categorias.
+        </p>
+      )}
+
 
       {categorias.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Ainda não criou categorias.</p>
+        <p className="text-sm text-muted-foreground">Ainda não existem categorias.</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {categorias.map((c) => {
@@ -132,15 +151,17 @@ function Categorias() {
                 {c.descricao ? (
                   <p className="mt-2 text-sm text-muted-foreground">{c.descricao}</p>
                 ) : null}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm(`Eliminar a categoria "${c.nome}"?`)) eliminar.mutate(c.id);
-                  }}
-                  className="mt-4 text-xs text-muted-foreground hover:text-accent"
-                >
-                  Eliminar
-                </button>
+                {isAdmin ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Eliminar a categoria "${c.nome}"?`)) eliminar.mutate(c.id);
+                    }}
+                    className="mt-4 text-xs text-muted-foreground hover:text-accent"
+                  >
+                    Eliminar
+                  </button>
+                ) : null}
               </div>
             );
           })}

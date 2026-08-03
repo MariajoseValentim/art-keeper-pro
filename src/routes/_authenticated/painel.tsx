@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell, PageTitle } from "@/components/AppShell";
+import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { PecaCard } from "@/components/PecaCard";
 import { formatEuro } from "@/lib/collection";
 import { auditoriaQuery, categoriasQuery, pecasQuery } from "@/lib/queries";
@@ -32,6 +33,14 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 function Painel() {
+  return (
+    <ApenasEquipa>
+      <PainelConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function PainelConteudo() {
   const { data: pecas = [], isLoading } = useQuery(pecasQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
   const { data: registos = [] } = useQuery(auditoriaQuery());

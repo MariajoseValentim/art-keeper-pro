@@ -16,7 +16,13 @@ function nomeFicheiro(path: string) {
   return path.split("/").pop() ?? path;
 }
 
-export function MediaPeca({ pecaId }: { pecaId: string }) {
+export function MediaPeca({
+  pecaId,
+  soLeitura = false,
+}: {
+  pecaId: string;
+  soLeitura?: boolean;
+}) {
   const queryClient = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const [aEnviar, setAEnviar] = useState(false);
@@ -170,21 +176,24 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
             ficheiro.
           </p>
         </div>
-        <div>
-          <input
-            ref={inputRef}
-            id="upload-midia"
-            type="file"
-            multiple
-            accept="image/*,video/*"
-            className="sr-only"
-            onChange={(e) => enviar(e.target.files)}
-          />
-          <Button type="button" disabled={aEnviar} onClick={() => inputRef.current?.click()}>
-            {aEnviar ? "A carregar…" : "Carregar ficheiros"}
-          </Button>
-        </div>
+        {soLeitura ? null : (
+          <div>
+            <input
+              ref={inputRef}
+              id="upload-midia"
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              className="sr-only"
+              onChange={(e) => enviar(e.target.files)}
+            />
+            <Button type="button" disabled={aEnviar} onClick={() => inputRef.current?.click()}>
+              {aEnviar ? "A carregar…" : "Carregar ficheiros"}
+            </Button>
+          </div>
+        )}
       </div>
+
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">A carregar ficheiros…</p>
@@ -196,26 +205,28 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
             <li key={item.id} className="border border-border">
               <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
                 <span className="label-caps">{index + 1}</span>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    aria-label="Mover para trás"
-                    disabled={index === 0 || reordenar.isPending}
-                    className="border border-border px-2 text-sm disabled:opacity-30"
-                    onClick={() => mover(index, -1)}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Mover para a frente"
-                    disabled={index === itens.length - 1 || reordenar.isPending}
-                    className="border border-border px-2 text-sm disabled:opacity-30"
-                    onClick={() => mover(index, 1)}
-                  >
-                    ↓
-                  </button>
-                </div>
+                {soLeitura ? null : (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      aria-label="Mover para trás"
+                      disabled={index === 0 || reordenar.isPending}
+                      className="border border-border px-2 text-sm disabled:opacity-30"
+                      onClick={() => mover(index, -1)}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Mover para a frente"
+                      disabled={index === itens.length - 1 || reordenar.isPending}
+                      className="border border-border px-2 text-sm disabled:opacity-30"
+                      onClick={() => mover(index, 1)}
+                    >
+                      ↓
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
                 {item.url ? (
@@ -243,7 +254,7 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
                   >
                     Descarregar
                   </button>
-                  {!isVideo(item.storage_path) && !item.principal ? (
+                  {!soLeitura && !isVideo(item.storage_path) && !item.principal ? (
                     <button
                       type="button"
                       className="text-muted-foreground hover:text-accent"
@@ -253,15 +264,17 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
                     </button>
                   ) : null}
                   {item.principal ? <span className="label-caps">Principal</span> : null}
-                  <button
-                    type="button"
-                    className="text-muted-foreground hover:text-accent"
-                    onClick={() => {
-                      if (confirm("Eliminar este ficheiro?")) eliminar.mutate(item);
-                    }}
-                  >
-                    Eliminar
-                  </button>
+                  {soLeitura ? null : (
+                    <button
+                      type="button"
+                      className="text-muted-foreground hover:text-accent"
+                      onClick={() => {
+                        if (confirm("Eliminar este ficheiro?")) eliminar.mutate(item);
+                      }}
+                    >
+                      Eliminar
+                    </button>
+                  )}
                 </div>
               </div>
             </li>

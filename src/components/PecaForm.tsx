@@ -46,12 +46,14 @@ export function PecaForm({
   ocupado,
   onSubmit,
   onDelete,
+  soLeitura = false,
 }: {
   peca?: PecaRow;
   categorias: CategoriaRow[];
   ocupado: boolean;
   onSubmit: (values: PecaFormValues) => void;
   onDelete?: () => void;
+  soLeitura?: boolean;
 }) {
   const [v, setV] = useState<PecaFormValues>({
     titulo: peca?.titulo ?? "",
@@ -84,9 +86,11 @@ export function PecaForm({
       className="plate space-y-8 p-6"
       onSubmit={(e) => {
         e.preventDefault();
+        if (soLeitura) return;
         onSubmit({ ...v, slug: v.slug.trim() || slugify(v.titulo) || crypto.randomUUID() });
       }}
     >
+      <fieldset disabled={soLeitura} className="space-y-8 disabled:opacity-90">
       <div className="grid gap-5 md:grid-cols-2">
         <Campo id="titulo" rotulo="Título *">
           <Input
@@ -251,17 +255,25 @@ export function PecaForm({
         />
         Tornar esta peça visível publicamente (partilha por slug)
       </label>
+      </fieldset>
 
-      <div className="flex flex-wrap gap-3">
-        <Button type="submit" disabled={ocupado}>
-          Guardar peça
-        </Button>
-        {onDelete ? (
-          <Button type="button" variant="outline" disabled={ocupado} onClick={onDelete}>
-            Eliminar
+      {soLeitura ? (
+        <p className="text-sm text-muted-foreground">
+          Consulta apenas — só administradores podem editar ou eliminar peças.
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-3">
+          <Button type="submit" disabled={ocupado}>
+            Guardar peça
           </Button>
-        ) : null}
-      </div>
+          {onDelete ? (
+            <Button type="button" variant="outline" disabled={ocupado} onClick={onDelete}>
+              Eliminar
+            </Button>
+          ) : null}
+        </div>
+      )}
     </form>
+
   );
 }

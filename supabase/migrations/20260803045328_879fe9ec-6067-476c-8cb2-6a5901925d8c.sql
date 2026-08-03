@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.pode_consultar(uuid) FROM anon, authenticated, public;
