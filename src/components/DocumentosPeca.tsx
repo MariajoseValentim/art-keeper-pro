@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Download, FileText, Loader2, Trash2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { documentosPecaQuery, type DocumentoPeca } from "@/lib/queries";
+import { DigitalizarDocumento } from "@/components/DigitalizarDocumento";
 
 const BUCKET = "documentos";
 const MAX_MB = 100;
@@ -135,6 +136,9 @@ export function DocumentosPeca({
           <span className="text-xs text-muted-foreground">Até {MAX_MB} MB por ficheiro.</span>
         </div>
       ) : null}
+
+      {!soLeitura ? <DigitalizarDocumento pecaId={pecaId} /> : null}
+
 
       <div className="mt-5">
         {isLoading ? (
