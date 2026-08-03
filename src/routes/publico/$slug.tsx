@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { getPecaPublica } from "@/lib/public.functions";
+import { getPecaPublica, type MidiaPublica } from "@/lib/public.functions";
 
 export const Route = createFileRoute("/publico/$slug")({
   loader: async ({ params }) => {
@@ -85,7 +85,7 @@ function PecaPublica() {
 
       {midia.length > 1 ? (
         <ul className="mt-4 grid max-w-3xl grid-cols-3 gap-3 sm:grid-cols-5">
-          {midia.slice(1).map((m) => (
+          {midia.slice(1).map((m: MidiaPublica) => (
             <li key={m.url} className="aspect-square overflow-hidden bg-muted">
               {m.video ? (
                 <video src={m.url} muted playsInline preload="metadata" className="size-full object-cover" />
