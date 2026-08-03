@@ -77,6 +77,15 @@ function NovaPecaConteudo() {
         ocupado={criar.isPending}
         onSubmit={(values) => criar.mutate(values)}
       />
+      <section className="plate mt-10 p-5 sm:p-6">
+        <h2 className="text-xl">Imagens, vídeos e documentos</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Assim que guardar a peça é aberta a ficha museológica, onde encontra as secções
+          «Imagens e vídeos» (fotografias e vídeos com ordenação) e «Documentos da peça»
+          (PDFs, certificados e digitalização com a câmara).
+        </p>
+      </section>
+
     </AppShell>
   );
 }
