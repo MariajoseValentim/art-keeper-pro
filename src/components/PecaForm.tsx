@@ -139,20 +139,38 @@ export function PecaForm({
     publico: peca?.publico ?? false,
   });
 
+  const [erros, setErros] = useState<Partial<Record<keyof PecaFormValues, string>>>({});
+
   function set<K extends keyof PecaFormValues>(k: K, value: PecaFormValues[K]) {
     setV((prev) => ({ ...prev, [k]: value }));
+    setErros((prev) => (prev[k] ? { ...prev, [k]: undefined } : prev));
+  }
+
+  function submeter(e: React.FormEvent) {
+    e.preventDefault();
+    if (soLeitura) return;
+    const slug = (v.slug.trim() || slugify(v.titulo)).trim();
+    const candidato = { ...v, slug };
+    const r = pecaSchema.safeParse(candidato);
+    if (!r.success) {
+      const novos: Partial<Record<keyof PecaFormValues, string>> = {};
+      for (const issue of r.error.issues) {
+        const chave = issue.path[0] as keyof PecaFormValues;
+        if (chave && !novos[chave]) novos[chave] = issue.message;
+      }
+      setErros(novos);
+      const primeiro = document.getElementById(String(Object.keys(novos)[0]));
+      primeiro?.focus();
+      return;
+    }
+    setErros({});
+    onSubmit({ ...candidato, slug: slug || crypto.randomUUID() });
   }
 
   return (
-    <form
-      className="plate space-y-8 p-6"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (soLeitura) return;
-        onSubmit({ ...v, slug: v.slug.trim() || slugify(v.titulo) || crypto.randomUUID() });
-      }}
-    >
+    <form className="plate space-y-8 p-6" onSubmit={submeter} noValidate>
       <fieldset disabled={soLeitura} className="space-y-8 disabled:opacity-90">
+
       <div className="grid gap-5 md:grid-cols-2">
         <Campo id="titulo" rotulo="Título *">
           <Input
