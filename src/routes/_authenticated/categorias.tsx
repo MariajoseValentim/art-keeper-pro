@@ -137,7 +137,7 @@ function CategoriasConteudo() {
 
 
       {categorias.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Ainda não criou categorias.</p>
+        <p className="text-sm text-muted-foreground">Ainda não existem categorias.</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {categorias.map((c) => {
