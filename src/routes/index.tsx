@@ -49,7 +49,7 @@ function Inicio() {
           alt="Logotipo Timeless Treasures"
           className="w-full max-w-md"
         />
-        <h1 className="sr-only">Timeless Treasures</h1>
+        
         <p className="mt-6 font-display text-2xl italic text-accent sm:text-3xl">
           Old things are never out of style.
         </p>
