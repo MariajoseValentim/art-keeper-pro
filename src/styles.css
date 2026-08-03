@@ -303,7 +303,42 @@
 }
 
 /* ---------- Impressão / exportação para PDF ---------- */
+.so-impressao {
+  display: none;
+}
+
 @media print {
+  .so-impressao {
+    display: block !important;
+  }
+
+  .so-impressao h1 {
+    font-size: 20pt;
+    margin-bottom: 8mm;
+  }
+
+  .so-impressao table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+  }
+
+  .so-impressao th,
+  .so-impressao td {
+    border: 1px solid #ccc;
+    padding: 2mm 2.5mm;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .so-impressao thead {
+    display: table-header-group;
+  }
+
+  .so-impressao tr {
+    break-inside: avoid;
+  }
+
   html,
   body {
     background: #fff !important;
