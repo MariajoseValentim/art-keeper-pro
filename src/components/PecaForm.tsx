@@ -46,12 +46,14 @@ export function PecaForm({
   ocupado,
   onSubmit,
   onDelete,
+  soLeitura = false,
 }: {
   peca?: PecaRow;
   categorias: CategoriaRow[];
   ocupado: boolean;
   onSubmit: (values: PecaFormValues) => void;
   onDelete?: () => void;
+  soLeitura?: boolean;
 }) {
   const [v, setV] = useState<PecaFormValues>({
     titulo: peca?.titulo ?? "",
