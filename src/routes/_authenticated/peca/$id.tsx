@@ -115,14 +115,19 @@ function FichaPecaConteudo() {
       <PecaForm
         peca={peca}
         categorias={categorias}
+        soLeitura={!isAdmin}
         ocupado={guardar.isPending || eliminar.isPending}
         onSubmit={(values) => guardar.mutate(values)}
-        onDelete={() => {
-          if (confirm("Eliminar definitivamente esta peça?")) eliminar.mutate();
-        }}
+        onDelete={
+          isAdmin
+            ? () => {
+                if (confirm("Eliminar definitivamente esta peça?")) eliminar.mutate();
+              }
+            : undefined
+        }
       />
       <div className="mt-10">
-        <MediaPeca pecaId={peca.id} />
+        <MediaPeca pecaId={peca.id} soLeitura={!isAdmin} />
       </div>
     </AppShell>
   );
