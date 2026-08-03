@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedColecaoIndexRouteImport } from './routes/_authenticated/colecao/index'
+import { Route as AuthenticatedColecaoNovaRouteImport } from './routes/_authenticated/colecao/nova'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,17 +41,25 @@ const AuthenticatedColecaoIndexRoute =
     path: '/colecao/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedColecaoNovaRoute =
+  AuthenticatedColecaoNovaRouteImport.update({
+    id: '/colecao/nova',
+    path: '/colecao/nova',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/colecao/': typeof AuthenticatedColecaoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/colecao': typeof AuthenticatedColecaoIndexRoute
 }
 export interface FileRoutesById {
@@ -59,19 +68,21 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/_authenticated/colecao/': typeof AuthenticatedColecaoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/painel' | '/colecao/'
+  fullPaths: '/' | '/auth' | '/painel' | '/colecao/nova' | '/colecao/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/painel' | '/colecao'
+  to: '/' | '/auth' | '/painel' | '/colecao/nova' | '/colecao'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/painel'
+    | '/_authenticated/colecao/nova'
     | '/_authenticated/colecao/'
   fileRoutesById: FileRoutesById
 }
@@ -118,16 +129,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedColecaoIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/colecao/nova': {
+      id: '/_authenticated/colecao/nova'
+      path: '/colecao/nova'
+      fullPath: '/colecao/nova'
+      preLoaderRoute: typeof AuthenticatedColecaoNovaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+  AuthenticatedColecaoNovaRoute: typeof AuthenticatedColecaoNovaRoute
   AuthenticatedColecaoIndexRoute: typeof AuthenticatedColecaoIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+  AuthenticatedColecaoNovaRoute: AuthenticatedColecaoNovaRoute,
   AuthenticatedColecaoIndexRoute: AuthenticatedColecaoIndexRoute,
 }
 
