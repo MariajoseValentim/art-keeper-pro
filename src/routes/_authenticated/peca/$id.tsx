@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { PecaForm, type PecaFormValues } from "@/components/PecaForm";
+import { MediaPeca } from "@/components/MediaPeca";
 import { supabase } from "@/integrations/supabase/client";
 import { categoriasQuery, pecaQuery } from "@/lib/queries";
 
