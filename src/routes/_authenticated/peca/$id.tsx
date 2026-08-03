@@ -2,6 +2,9 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Printer } from "lucide-react";
+import { imprimirFicha } from "@/lib/documentos";
+
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { useAuth } from "@/hooks/useAuth";
@@ -104,18 +107,33 @@ function FichaPecaConteudo() {
         title={peca.titulo}
         description={[peca.autor, peca.periodo].filter(Boolean).join(" · ") || undefined}
         action={
-          peca.publico ? (
-            <Link
-              to="/publico/$slug"
-              params={{ slug: peca.slug }}
-              className="border border-accent px-5 py-2.5 text-sm text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
+          <div className="no-imprimir flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setVista("ficha");
+                setTimeout(
+                  () => imprimirFicha(`Ficha museológica — ${peca.titulo}`),
+                  150,
+                );
+              }}
+              className="inline-flex items-center gap-2 border border-border px-5 py-2.5 text-sm text-foreground transition-colors hover:border-accent hover:text-accent"
             >
-              Ver página pública
-            </Link>
-          ) : null
+              <Printer className="size-4" aria-hidden /> Imprimir / PDF
+            </button>
+            {peca.publico ? (
+              <Link
+                to="/publico/$slug"
+                params={{ slug: peca.slug }}
+                className="border border-accent px-5 py-2.5 text-sm text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                Ver página pública
+              </Link>
+            ) : null}
+          </div>
         }
       />
-      <div className="mb-8 inline-flex rounded-sm border border-border p-1">
+      <div className="no-imprimir mb-8 inline-flex rounded-sm border border-border p-1">
         {(["ficha", "edicao"] as const).map((v) => (
           <button
             key={v}
@@ -133,8 +151,11 @@ function FichaPecaConteudo() {
       </div>
 
       {vista === "ficha" ? (
-        <FichaMuseologica peca={peca} categorias={categorias} />
+        <div className="area-impressao">
+          <FichaMuseologica peca={peca} categorias={categorias} />
+        </div>
       ) : (
+
       <PecaForm
         peca={peca}
         categorias={categorias}

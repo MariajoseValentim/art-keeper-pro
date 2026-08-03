@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { PecaCard } from "@/components/PecaCard";
+import { ImportarExportar } from "@/components/ImportarExportar";
+
 import { useAuth } from "@/hooks/useAuth";
 import { categoriasQuery, pecasQuery } from "@/lib/queries";
 
@@ -73,6 +75,10 @@ function ColecaoConteudo() {
           ))}
         </div>
       )}
+      <div className="mt-12">
+        <ImportarExportar pecas={pecas} categorias={categorias} podeImportar={isAdmin} />
+      </div>
+
     </AppShell>
   );
 }
