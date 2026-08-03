@@ -63,11 +63,22 @@ function PecaPublica() {
 
   return (
     <AppShell>
+      <div className="area-impressao">
+      <div className="no-imprimir flex justify-end">
+        <button
+          type="button"
+          onClick={() => imprimirFicha(`Ficha museológica — ${peca.titulo}`)}
+          className="inline-flex items-center gap-2 border border-border px-4 py-2 text-sm transition-colors hover:border-accent hover:text-accent"
+        >
+          <Printer className="size-4" aria-hidden /> Imprimir / PDF
+        </button>
+      </div>
       <p className="label-caps">Ficha pública</p>
       <h1 className="mt-2 text-4xl md:text-5xl">{peca.titulo}</h1>
       <p className="mt-3 text-lg text-muted-foreground">
         {[peca.autor, peca.periodo ?? peca.datacao].filter(Boolean).join(" · ")}
       </p>
+
 
       {peca.capa ? (
         <figure className="mt-8 max-w-3xl overflow-hidden bg-muted">
