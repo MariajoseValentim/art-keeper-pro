@@ -10,9 +10,8 @@ export default defineConfig({
         replacement: new URL("./src/test/pdf-worker-url.ts", import.meta.url).pathname,
       },
     ],
+  },
   test: {
-
-
     environment: "node",
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.test.ts"],
