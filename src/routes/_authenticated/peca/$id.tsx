@@ -25,11 +25,21 @@ export const Route = createFileRoute("/_authenticated/peca/$id")({
 });
 
 function FichaPeca() {
+  return (
+    <ApenasEquipa>
+      <FichaPecaConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function FichaPecaConteudo() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
   const { data: peca, isLoading } = useQuery(pecaQuery(id));
   const { data: categorias = [] } = useQuery(categoriasQuery());
+
 
   const guardar = useMutation({
     mutationFn: async (values: PecaFormValues) => {
