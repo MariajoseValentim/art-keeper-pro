@@ -618,7 +618,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      pode_consultar: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "curador" | "visitante"
