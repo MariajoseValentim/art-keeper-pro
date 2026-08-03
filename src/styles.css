@@ -301,3 +301,56 @@
     transform: translateY(0);
   }
 }
+
+/* ---------- Impressão / exportação para PDF ---------- */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .no-imprimir,
+  header nav,
+  nav,
+  footer,
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  .area-impressao {
+    display: block !important;
+  }
+
+  .area-impressao * {
+    box-shadow: none !important;
+  }
+
+  .area-impressao .plate,
+  .area-impressao .plate-gilt {
+    background: #fff !important;
+    border: 1px solid #d8d2c4 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .area-impressao img,
+  .area-impressao video {
+    max-height: 11cm;
+    break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+
+  @page {
+    margin: 14mm;
+  }
+}
