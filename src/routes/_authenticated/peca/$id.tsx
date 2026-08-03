@@ -10,6 +10,7 @@ import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { useAuth } from "@/hooks/useAuth";
 import { PecaForm, type PecaFormValues } from "@/components/PecaForm";
 import { MediaPeca } from "@/components/MediaPeca";
+import { DocumentosPeca } from "@/components/DocumentosPeca";
 import { FichaMuseologica } from "@/components/FichaMuseologica";
 import { supabase } from "@/integrations/supabase/client";
 import { categoriasQuery, pecaQuery } from "@/lib/queries";
@@ -173,6 +174,9 @@ function FichaPecaConteudo() {
       )}
       <div className="mt-10">
         <MediaPeca pecaId={peca.id} soLeitura={!isAdmin} />
+      </div>
+      <div className="mt-10">
+        <DocumentosPeca pecaId={peca.id} soLeitura={!isAdmin} />
       </div>
     </AppShell>
   );

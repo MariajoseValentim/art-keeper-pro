@@ -275,6 +275,50 @@ export type Database = {
           },
         ]
       }
+      peca_documentos: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          peca_id: string
+          storage_path: string
+          tamanho: number | null
+          tipo: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          peca_id: string
+          storage_path: string
+          tamanho?: number | null
+          tipo?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          peca_id?: string
+          storage_path?: string
+          tamanho?: number | null
+          tipo?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "peca_documentos_peca_id_fkey"
+            columns: ["peca_id"]
+            isOneToOne: false
+            referencedRelation: "pecas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pecas: {
         Row: {
           altura_cm: number | null

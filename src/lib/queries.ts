@@ -118,3 +118,27 @@ export const auditoriaQuery = () =>
       return data ?? [];
     },
   });
+
+export type DocumentoPeca = {
+  id: string;
+  storage_path: string;
+  nome: string;
+  tipo: string | null;
+  tamanho: number | null;
+  descricao: string | null;
+  created_at: string;
+};
+
+export const documentosPecaQuery = (pecaId: string) =>
+  queryOptions({
+    queryKey: ["documentos-peca", pecaId],
+    queryFn: async (): Promise<DocumentoPeca[]> => {
+      const { data, error } = await supabase
+        .from("peca_documentos")
+        .select("id, storage_path, nome, tipo, tamanho, descricao, created_at")
+        .eq("peca_id", pecaId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
