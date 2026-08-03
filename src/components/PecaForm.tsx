@@ -29,17 +29,78 @@ export interface PecaFormValues {
   publico: boolean;
 }
 
-function Campo({ id, rotulo, children }: { id: string; rotulo: string; children: React.ReactNode }) {
+function Campo({
+  id,
+  rotulo,
+  erro,
+  children,
+}: {
+  id: string;
+  rotulo: string;
+  erro?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{rotulo}</Label>
       {children}
+      {erro ? (
+        <p role="alert" className="text-xs text-destructive">
+          {erro}
+        </p>
+      ) : null}
     </div>
   );
 }
 
+const texto = (max: number, rotulo: string) =>
+  z
+    .string()
+    .trim()
+    .max(max, { message: `${rotulo}: máximo ${max} caracteres.` })
+    .nullable()
+    .optional();
+
+const pecaSchema = z.object({
+  titulo: z
+    .string()
+    .trim()
+    .min(1, { message: "O título é obrigatório." })
+    .max(200, { message: "O título deve ter menos de 200 caracteres." }),
+  slug: z
+    .string()
+    .trim()
+    .max(200, { message: "O slug deve ter menos de 200 caracteres." })
+    .regex(/^[a-z0-9-]*$/, { message: "O slug só aceita letras minúsculas, números e hífenes." }),
+  inventario: texto(60, "Nº de inventário"),
+  autor: texto(160, "Autoria"),
+  periodo: texto(120, "Período"),
+  materiais: texto(240, "Materiais"),
+  tecnica: texto(240, "Técnica"),
+  dimensoes: texto(160, "Dimensões"),
+  localizacao: texto(160, "Localização"),
+  proveniencia: texto(2000, "Proveniência"),
+  descricao: texto(5000, "Descrição"),
+  notas_privadas: texto(5000, "Notas privadas"),
+  valor_estimado: z
+    .number({ message: "Valor estimado inválido." })
+    .min(0, { message: "O valor estimado não pode ser negativo." })
+    .max(1_000_000_000, { message: "Valor estimado demasiado elevado." })
+    .nullable(),
+  data_aquisicao: z
+    .string()
+    .trim()
+    .refine((d) => !d || !Number.isNaN(Date.parse(d)), { message: "Data de aquisição inválida." })
+    .refine((d) => !d || Date.parse(d) <= Date.now(), {
+      message: "A data de aquisição não pode ser futura.",
+    })
+    .nullable()
+    .optional(),
+});
+
 const selectCls =
   "h-9 w-full border border-input bg-background px-3 text-sm outline-none focus-visible:border-accent";
+
 
 export function PecaForm({
   peca,
