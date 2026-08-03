@@ -62,7 +62,7 @@ function Campo({ rotulo, valor }: { rotulo: string; valor: string }) {
 }
 
 function FichaPeca() {
-  const peca = Route.useLoaderData();
+  const peca = Route.useLoaderData() as Peca;
 
   return (
     <AppShell>
