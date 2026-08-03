@@ -44,12 +44,25 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
           .upload(path, file, { contentType: file.type || "application/octet-stream", upsert: false });
         if (upErr) throw upErr;
 
+      let proximaOrdem = itens.reduce((m, i) => Math.max(m, i.ordem ?? 0), -1) + 1;
+      for (const file of Array.from(files)) {
+        if (file.size > MAX_MB * 1024 * 1024) {
+          toast.error(`"${file.name}" excede ${MAX_MB} MB.`);
+          continue;
+        }
+        const ext = file.name.split(".").pop()?.toLowerCase() || "bin";
+        const path = `${uid}/${pecaId}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from(BUCKET)
+          .upload(path, file, { contentType: file.type || "application/octet-stream", upsert: false });
+        if (upErr) throw upErr;
+
         const { error: dbErr } = await supabase.from("fotografias").insert({
           user_id: uid,
           peca_id: pecaId,
           storage_path: path,
           legenda: file.name,
-          ordem: itens.length,
+          ordem: proximaOrdem++,
           principal: itens.length === 0 && !isVideo(path),
         });
         if (dbErr) throw dbErr;
