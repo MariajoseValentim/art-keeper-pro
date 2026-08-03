@@ -37,7 +37,7 @@ function Campo({
 }: {
   id: string;
   rotulo: string;
-  erro?: string;
+  erro?: string | undefined;
   children: React.ReactNode;
 }) {
   return (
