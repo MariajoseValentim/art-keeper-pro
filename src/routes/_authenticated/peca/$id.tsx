@@ -2,6 +2,9 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Printer } from "lucide-react";
+import { imprimirFicha } from "@/lib/documentos";
+
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { useAuth } from "@/hooks/useAuth";
