@@ -7,10 +7,11 @@ import {
   formatEuro,
   getPeca,
   raridadeLabel,
+  type Peca,
 } from "@/lib/collection";
 
 export const Route = createFileRoute("/colecao/$slug")({
-  loader: ({ params }) => {
+  loader: ({ params }): Peca => {
     const peca = getPeca(params.slug);
     if (!peca) throw notFound();
     return peca;
