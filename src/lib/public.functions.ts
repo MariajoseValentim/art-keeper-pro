@@ -20,10 +20,26 @@ function publicClient() {
   });
 }
 
+export interface PecaPublica {
+  id: string;
+  slug: string;
+  titulo: string;
+  autor: string | null;
+  periodo: string | null;
+  datacao: string | null;
+  materiais: string | null;
+  tecnica: string | null;
+  dimensoes: string | null;
+  descricao: string | null;
+  historico: string | null;
+  categoria_id: string | null;
+  created_at: string;
+}
+
 const COLUNAS =
   "id, slug, titulo, autor, periodo, datacao, materiais, tecnica, dimensoes, descricao, historico, categoria_id, created_at";
 
-export const listPecasPublicas = createServerFn({ method: "GET" }).handler(async () => {
+export const listPecasPublicas = createServerFn({ method: "GET" }).handler(async (): Promise<PecaPublica[]> => {
   const { data, error } = await publicClient()
     .from("pecas")
     .select(COLUNAS)
@@ -36,7 +52,7 @@ export const listPecasPublicas = createServerFn({ method: "GET" }).handler(async
 
 export const getPecaPublica = createServerFn({ method: "GET" })
   .inputValidator((data: { slug: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<PecaPublica | null> => {
     const { data: peca, error } = await publicClient()
       .from("pecas")
       .select(COLUNAS)
