@@ -59,6 +59,7 @@ function Campo({ rotulo, valor }: { rotulo: string; valor: string | null }) {
 
 function PecaPublica() {
   const peca = Route.useLoaderData();
+  const midia = peca.midia ?? [];
 
   return (
     <AppShell>
@@ -67,6 +68,40 @@ function PecaPublica() {
       <p className="mt-3 text-lg text-muted-foreground">
         {[peca.autor, peca.periodo ?? peca.datacao].filter(Boolean).join(" · ")}
       </p>
+
+      {peca.capa ? (
+        <figure className="mt-8 max-w-3xl overflow-hidden bg-muted">
+          {peca.capa.video ? (
+            <video src={peca.capa.url} controls playsInline className="w-full" />
+          ) : (
+            <img
+              src={peca.capa.url}
+              alt={peca.capa.legenda ?? `Fotografia principal da peça ${peca.titulo}`}
+              className="w-full object-cover"
+            />
+          )}
+        </figure>
+      ) : null}
+
+      {midia.length > 1 ? (
+        <ul className="mt-4 grid max-w-3xl grid-cols-3 gap-3 sm:grid-cols-5">
+          {midia.slice(1).map((m) => (
+            <li key={m.url} className="aspect-square overflow-hidden bg-muted">
+              {m.video ? (
+                <video src={m.url} muted playsInline preload="metadata" className="size-full object-cover" />
+              ) : (
+                <img
+                  src={m.url}
+                  alt={m.legenda ?? `Documentação da peça ${peca.titulo}`}
+                  loading="lazy"
+                  className="size-full object-cover"
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
 
       <div className="mt-8 grid max-w-3xl gap-x-8 sm:grid-cols-2">
         <Campo rotulo="Materiais" valor={peca.materiais} />
