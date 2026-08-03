@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { LayoutGrid, Library, Tags, Search, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { BotaoTema } from "@/components/BotaoTema";
 
 const nav = [
   { to: "/painel", label: "Painel", icon: LayoutGrid },
@@ -25,33 +26,38 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="rule-brass sticky top-0 z-30 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
-          <Link to="/" className="flex items-baseline gap-3">
-            <span className="font-display text-2xl leading-none tracking-tight">Curadoria</span>
-            <span className="label-caps hidden sm:inline">Coleção privada</span>
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 sm:flex sm:justify-between sm:px-6 sm:py-4">
+          <Link to="/" className="flex min-w-0 items-baseline gap-3">
+            <span className="truncate font-display text-xl leading-none tracking-tight sm:text-2xl">
+              Timeless Treasures
+            </span>
+            <span className="label-caps hidden lg:inline">Curadoria de coleções</span>
           </Link>
-          <nav className="flex items-center gap-1">
-            {session
-              ? nav.map(({ to, label, icon: Icon }) => (
-                  <Link
-                    key={to}
-                    to={to}
-                    activeProps={{ className: "text-accent border-accent" }}
-                    inactiveProps={{ className: "text-muted-foreground border-transparent" }}
-                    className="flex items-center gap-2 border-b-2 px-3 py-2 text-sm transition-colors hover:text-foreground"
-                  >
-                    <Icon className="size-4" aria-hidden />
-                    <span className="hidden md:inline">{label}</span>
-                  </Link>
-                ))
-              : null}
+          <div className="flex shrink-0 items-center gap-1">
+            <nav className="hidden items-center gap-1 sm:flex">
+              {session
+                ? nav.map(({ to, label, icon: Icon }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      activeProps={{ className: "text-accent border-accent" }}
+                      inactiveProps={{ className: "text-muted-foreground border-transparent" }}
+                      className="flex items-center gap-2 border-b-2 px-3 py-2 text-sm transition-colors duration-200 hover:text-foreground"
+                    >
+                      <Icon className="size-4" aria-hidden />
+                      <span className="hidden md:inline">{label}</span>
+                    </Link>
+                  ))
+                : null}
+            </nav>
+            <BotaoTema className="ml-1" />
             {loading ? null : session ? (
               <button
                 type="button"
                 onClick={sair}
-                className="ml-2 flex items-center gap-2 border-b-2 border-transparent px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="ml-1 flex items-center gap-2 rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
               >
                 <LogOut className="size-4" aria-hidden />
                 <span className="hidden md:inline">Sair</span>
@@ -59,17 +65,43 @@ export function AppShell({ children }: { children: ReactNode }) {
             ) : (
               <Link
                 to="/auth"
-                className="border border-accent px-4 py-2 text-sm text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
+                className="ml-1 rounded-sm border border-accent px-4 py-2 text-sm text-accent transition-colors duration-200 hover:bg-accent hover:text-accent-foreground"
               >
                 Entrar
               </Link>
             )}
-          </nav>
+          </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
-      <footer className="rule-brass mx-auto mt-16 max-w-6xl border-b-0 border-t px-6 py-8">
-        <p className="label-caps">Curadoria digital · registo, conservação e investigação</p>
+
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-24 sm:px-6 sm:py-10 sm:pb-10">
+        {children}
+      </main>
+
+      {session ? (
+        <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur-md sm:hidden">
+          <div className="grid grid-cols-4">
+            {nav.map(({ to, label, icon: Icon }) => (
+              <Link
+                key={to}
+                to={to}
+                activeProps={{ className: "text-accent" }}
+                inactiveProps={{ className: "text-muted-foreground" }}
+                className="flex flex-col items-center gap-1 py-2.5 text-[0.65rem] transition-colors duration-200"
+              >
+                <Icon className="size-5" aria-hidden />
+                {label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      ) : null}
+
+      <footer className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6">
+        <hr className="gilt-rule mb-6" />
+        <p className="label-caps">
+          Timeless Treasures · Old things are never out of style
+        </p>
       </footer>
     </div>
   );
@@ -87,13 +119,18 @@ export function PageTitle({
   action?: ReactNode | undefined;
 }) {
   return (
-    <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
-      <div className="max-w-2xl">
-        <p className="label-caps">{eyebrow}</p>
-        <h1 className="mt-2 text-4xl md:text-5xl">{title}</h1>
-        {description ? <p className="mt-3 text-muted-foreground">{description}</p> : null}
+    <div className="fade-up mb-8 sm:mb-10">
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <div className="max-w-2xl">
+          <p className="label-caps">{eyebrow}</p>
+          <h1 className="mt-2 text-3xl sm:text-4xl md:text-5xl">{title}</h1>
+          {description ? (
+            <p className="mt-3 text-sm text-muted-foreground sm:text-base">{description}</p>
+          ) : null}
+        </div>
+        {action}
       </div>
-      {action}
+      <hr className="gilt-rule mt-6" />
     </div>
   );
 }
