@@ -27,3 +27,9 @@ g["ImageData"] ??= class ImageDataStub {};
 // Node antigo não tem Promise.try, usado internamente pelo pdf.js.
 const P = Promise as unknown as { try?: (fn: (...a: unknown[]) => unknown, ...args: unknown[]) => Promise<unknown> };
 P.try ??= (fn, ...args) => new Promise((resolve) => resolve(fn(...args)));
+
+// Uint8Array.prototype.toHex só existe em runtimes recentes.
+const U8 = Uint8Array.prototype as unknown as { toHex?: () => string };
+U8.toHex ??= function (this: Uint8Array) {
+  return Array.from(this, (b) => b.toString(16).padStart(2, "0")).join("");
+};
