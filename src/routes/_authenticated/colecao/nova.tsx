@@ -24,9 +24,18 @@ export const Route = createFileRoute("/_authenticated/colecao/nova")({
 });
 
 function NovaPeca() {
+  return (
+    <ApenasEquipa soAdmin>
+      <NovaPecaConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function NovaPecaConteudo() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: categorias = [] } = useQuery(categoriasQuery());
+
 
   const criar = useMutation({
     mutationFn: async (values: PecaFormValues) => {
