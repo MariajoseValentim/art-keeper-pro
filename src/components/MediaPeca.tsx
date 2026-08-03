@@ -254,7 +254,7 @@ export function MediaPeca({
                   >
                     Descarregar
                   </button>
-                  {!isVideo(item.storage_path) && !item.principal ? (
+                  {!soLeitura && !isVideo(item.storage_path) && !item.principal ? (
                     <button
                       type="button"
                       className="text-muted-foreground hover:text-accent"
@@ -264,15 +264,17 @@ export function MediaPeca({
                     </button>
                   ) : null}
                   {item.principal ? <span className="label-caps">Principal</span> : null}
-                  <button
-                    type="button"
-                    className="text-muted-foreground hover:text-accent"
-                    onClick={() => {
-                      if (confirm("Eliminar este ficheiro?")) eliminar.mutate(item);
-                    }}
-                  >
-                    Eliminar
-                  </button>
+                  {soLeitura ? null : (
+                    <button
+                      type="button"
+                      className="text-muted-foreground hover:text-accent"
+                      onClick={() => {
+                        if (confirm("Eliminar este ficheiro?")) eliminar.mutate(item);
+                      }}
+                    >
+                      Eliminar
+                    </button>
+                  )}
                 </div>
               </div>
             </li>
