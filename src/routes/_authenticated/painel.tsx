@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell, PageTitle } from "@/components/AppShell";
+import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { PecaCard } from "@/components/PecaCard";
 import { formatEuro } from "@/lib/collection";
 import { auditoriaQuery, categoriasQuery, pecasQuery } from "@/lib/queries";
