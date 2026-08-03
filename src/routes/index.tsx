@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 import { listPecasPublicas, type PecaPublica } from "@/lib/public.functions";
+import logoAsset from "@/assets/timeless-treasures.webp.asset.json";
+
 
 export const Route = createFileRoute("/")({
   loader: () => listPecasPublicas(),
