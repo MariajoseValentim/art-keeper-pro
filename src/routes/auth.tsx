@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -30,6 +32,8 @@ function Auth() {
   const [modo, setModo] = useState<"entrar" | "registar">("entrar");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [verPassword, setVerPassword] = useState(false);
+
   const [nome, setNome] = useState("");
   const [apelido, setApelido] = useState("");
   const [ocupado, setOcupado] = useState(false);
@@ -112,15 +116,27 @@ function Auth() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Palavra-passe</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={verPassword ? "text" : "password"}
+                required
+                minLength={6}
+                className="pr-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setVerPassword((v) => !v)}
+                aria-label={verPassword ? "Ocultar palavra-passe" : "Mostrar palavra-passe"}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-accent"
+              >
+                {verPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
+
           <Button type="submit" disabled={ocupado} className="w-full">
             {modo === "entrar" ? "Entrar" : "Criar conta"}
           </Button>
