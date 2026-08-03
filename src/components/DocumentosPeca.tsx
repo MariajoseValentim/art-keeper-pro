@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Download, FileText, Loader2, Trash2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { documentosPecaQuery, type DocumentoPeca } from "@/lib/queries";
+import { DigitalizarDocumento } from "@/components/DigitalizarDocumento";
 
 const BUCKET = "documentos";
 const MAX_MB = 100;
