@@ -43,6 +43,18 @@ function Inicio() {
 
   return (
     <AppShell>
+      <header className="mb-12 flex flex-col items-center text-center">
+        <img
+          src={logoAsset.url}
+          alt="Logotipo Timeless Treasures"
+          className="w-full max-w-md"
+        />
+        <h1 className="sr-only">Timeless Treasures</h1>
+        <p className="mt-6 font-display text-2xl italic text-accent sm:text-3xl">
+          Old things are never out of style.
+        </p>
+      </header>
+
       <PageTitle
         eyebrow="Curadoria digital"
         title="A sua coleção, tratada como um museu"
@@ -56,6 +68,7 @@ function Inicio() {
           </Link>
         }
       />
+
 
       <div className="grid gap-4 sm:grid-cols-3">
         {[
