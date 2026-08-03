@@ -134,8 +134,7 @@ const pecas: Peca[] = [
     publica: false,
     aquisicao: "2019-11-27",
     notas: "Perdas de policromia na base e ataque xilófago inativo. Proposta de intervenção em curso.",
-    imagem:
-      "https://images.unsplash.com/photo-1569163139394-de4798aa62b6?auto=format&fit=crop&w=1200&q=80",
+    imagem: saoMiguel,
   },
   {
     id: "4",
