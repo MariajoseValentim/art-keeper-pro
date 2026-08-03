@@ -134,6 +134,8 @@ function PecaPublica() {
           <p className="mt-2 text-sm leading-relaxed">{peca.historico}</p>
         </div>
       ) : null}
+      </div>
     </AppShell>
+
   );
 }
