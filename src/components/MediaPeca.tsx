@@ -205,26 +205,28 @@ export function MediaPeca({
             <li key={item.id} className="border border-border">
               <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
                 <span className="label-caps">{index + 1}</span>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    aria-label="Mover para trás"
-                    disabled={index === 0 || reordenar.isPending}
-                    className="border border-border px-2 text-sm disabled:opacity-30"
-                    onClick={() => mover(index, -1)}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Mover para a frente"
-                    disabled={index === itens.length - 1 || reordenar.isPending}
-                    className="border border-border px-2 text-sm disabled:opacity-30"
-                    onClick={() => mover(index, 1)}
-                  >
-                    ↓
-                  </button>
-                </div>
+                {soLeitura ? null : (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      aria-label="Mover para trás"
+                      disabled={index === 0 || reordenar.isPending}
+                      className="border border-border px-2 text-sm disabled:opacity-30"
+                      onClick={() => mover(index, -1)}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Mover para a frente"
+                      disabled={index === itens.length - 1 || reordenar.isPending}
+                      className="border border-border px-2 text-sm disabled:opacity-30"
+                      onClick={() => mover(index, 1)}
+                    >
+                      ↓
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
                 {item.url ? (
