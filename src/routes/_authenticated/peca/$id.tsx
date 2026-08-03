@@ -118,13 +118,13 @@ function FichaPecaConteudo() {
         soLeitura={!isAdmin}
         ocupado={guardar.isPending || eliminar.isPending}
         onSubmit={(values) => guardar.mutate(values)}
-        onDelete={
-          isAdmin
-            ? () => {
+        {...(isAdmin
+          ? {
+              onDelete: () => {
                 if (confirm("Eliminar definitivamente esta peça?")) eliminar.mutate();
-              }
-            : undefined
-        }
+              },
+            }
+          : {})}
       />
       <div className="mt-10">
         <MediaPeca pecaId={peca.id} soLeitura={!isAdmin} />
