@@ -52,7 +52,8 @@ export const midiaQuery = (pecaId: string) =>
         .from("fotografias")
         .select("id, storage_path, legenda, principal, ordem")
         .eq("peca_id", pecaId)
-        .order("ordem", { ascending: true });
+        .order("ordem", { ascending: true })
+        .order("created_at", { ascending: true });
       if (error) throw error;
       const linhas = data ?? [];
       if (linhas.length === 0) return [];

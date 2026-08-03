@@ -32,6 +32,7 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
       const uid = userData.user?.id;
       if (!uid) throw new Error("Sessão expirada.");
 
+      let proximaOrdem = itens.reduce((m, i) => Math.max(m, i.ordem ?? 0), -1) + 1;
       for (const file of Array.from(files)) {
         if (file.size > MAX_MB * 1024 * 1024) {
           toast.error(`"${file.name}" excede ${MAX_MB} MB.`);
@@ -49,7 +50,7 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
           peca_id: pecaId,
           storage_path: path,
           legenda: file.name,
-          ordem: itens.length,
+          ordem: proximaOrdem++,
           principal: itens.length === 0 && !isVideo(path),
         });
         if (dbErr) throw dbErr;
@@ -63,6 +64,46 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
       if (inputRef.current) inputRef.current.value = "";
     }
   }
+
+  const reordenar = useMutation({
+    mutationFn: async (novaLista: MidiaItem[]) => {
+      const alteradas = novaLista
+        .map((item, idx) => ({ item, idx }))
+        .filter(({ item, idx }) => item.ordem !== idx);
+      for (const { item, idx } of alteradas) {
+        const { error } = await supabase
+          .from("fotografias")
+          .update({ ordem: idx })
+          .eq("id", item.id);
+        if (error) throw error;
+      }
+    },
+    onMutate: async (novaLista) => {
+      await queryClient.cancelQueries({ queryKey: ["midia", pecaId] });
+      const anterior = queryClient.getQueryData<MidiaItem[]>(["midia", pecaId]);
+      queryClient.setQueryData<MidiaItem[]>(
+        ["midia", pecaId],
+        novaLista.map((item, idx) => ({ ...item, ordem: idx })),
+      );
+      return { anterior };
+    },
+    onError: (e, _v, ctx) => {
+      if (ctx?.anterior) queryClient.setQueryData(["midia", pecaId], ctx.anterior);
+      toast.error(e instanceof Error ? e.message : "Não foi possível reordenar.");
+    },
+    onSettled: () => invalidar(),
+  });
+
+  function mover(index: number, direcao: -1 | 1) {
+    const destino = index + direcao;
+    if (destino < 0 || destino >= itens.length) return;
+    const lista = [...itens];
+    const [movido] = lista.splice(index, 1);
+    if (!movido) return;
+    lista.splice(destino, 0, movido);
+    reordenar.mutate(lista);
+  }
+
 
   const eliminar = useMutation({
     mutationFn: async (item: MidiaItem) => {
@@ -148,8 +189,31 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
         <p className="text-sm text-muted-foreground">Ainda não há imagens ou vídeos nesta peça.</p>
       ) : (
         <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {itens.map((item) => (
+          {itens.map((item, index) => (
             <li key={item.id} className="border border-border">
+              <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
+                <span className="label-caps">{index + 1}</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    aria-label="Mover para trás"
+                    disabled={index === 0 || reordenar.isPending}
+                    className="border border-border px-2 text-sm disabled:opacity-30"
+                    onClick={() => mover(index, -1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Mover para a frente"
+                    disabled={index === itens.length - 1 || reordenar.isPending}
+                    className="border border-border px-2 text-sm disabled:opacity-30"
+                    onClick={() => mover(index, 1)}
+                  >
+                    ↓
+                  </button>
+                </div>
+              </div>
               <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
                 {item.url ? (
                   isVideo(item.storage_path) ? (
