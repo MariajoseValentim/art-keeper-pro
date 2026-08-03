@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AppShell, PageTitle } from "@/components/AppShell";
+import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { PecaForm, type PecaFormValues } from "@/components/PecaForm";
 import { supabase } from "@/integrations/supabase/client";
 import { categoriasQuery } from "@/lib/queries";
