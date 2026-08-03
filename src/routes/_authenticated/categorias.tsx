@@ -38,13 +38,26 @@ function Categorias() {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
       if (!uid) throw new Error("Sessão expirada.");
+      const nomeLimpo = nome.trim();
+      if (!nomeLimpo) throw new Error("Indique um nome para a categoria.");
+      if (categorias.some((c) => c.nome.trim().toLowerCase() === nomeLimpo.toLowerCase())) {
+        throw new Error(`Já existe uma categoria chamada "${nomeLimpo}".`);
+      }
+      const base = slugify(nomeLimpo) || crypto.randomUUID();
+      const usados = new Set(categorias.map((c) => c.slug));
+      let slug = base;
+      let i = 2;
+      while (usados.has(slug)) slug = `${base}-${i++}`;
       const { error } = await supabase.from("categorias").insert({
-        nome,
-        slug: slugify(nome) || crypto.randomUUID(),
-        descricao: descricao || null,
+        nome: nomeLimpo,
+        slug,
+        descricao: descricao.trim() || null,
         user_id: uid,
       });
-      if (error) throw error;
+      if (error) {
+        if (error.code === "23505") throw new Error("Já existe uma categoria com esse nome.");
+        throw error;
+      }
     },
     onSuccess: () => {
       setNome("");
