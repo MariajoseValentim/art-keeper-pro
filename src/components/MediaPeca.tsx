@@ -99,6 +99,7 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
     if (destino < 0 || destino >= itens.length) return;
     const lista = [...itens];
     const [movido] = lista.splice(index, 1);
+    if (!movido) return;
     lista.splice(destino, 0, movido);
     reordenar.mutate(lista);
   }
