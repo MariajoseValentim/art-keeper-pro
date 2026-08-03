@@ -10,79 +10,145 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CategoriasRouteImport } from './routes/categorias'
-import { Route as PesquisaRouteImport } from './routes/pesquisa'
-import { Route as ColecaoIndexRouteImport } from './routes/colecao/index'
-import { Route as ColecaoSlugRouteImport } from './routes/colecao/$slug'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
+import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as AuthenticatedPesquisaRouteImport } from './routes/_authenticated/pesquisa'
+import { Route as PublicoSlugRouteImport } from './routes/publico/$slug'
+import { Route as AuthenticatedColecaoIndexRouteImport } from './routes/_authenticated/colecao/index'
+import { Route as AuthenticatedColecaoNovaRouteImport } from './routes/_authenticated/colecao/nova'
+import { Route as AuthenticatedPecaIdRouteImport } from './routes/_authenticated/peca/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriasRoute = CategoriasRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const PesquisaRoute = PesquisaRouteImport.update({
+const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPesquisaRoute = AuthenticatedPesquisaRouteImport.update({
   id: '/pesquisa',
   path: '/pesquisa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const PublicoSlugRoute = PublicoSlugRouteImport.update({
+  id: '/publico/$slug',
+  path: '/publico/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ColecaoIndexRoute = ColecaoIndexRouteImport.update({
-  id: '/colecao/',
-  path: '/colecao/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ColecaoSlugRoute = ColecaoSlugRouteImport.update({
-  id: '/colecao/$slug',
-  path: '/colecao/$slug',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedColecaoIndexRoute =
+  AuthenticatedColecaoIndexRouteImport.update({
+    id: '/colecao/',
+    path: '/colecao/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedColecaoNovaRoute =
+  AuthenticatedColecaoNovaRouteImport.update({
+    id: '/colecao/nova',
+    path: '/colecao/nova',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPecaIdRoute = AuthenticatedPecaIdRouteImport.update({
+  id: '/peca/$id',
+  path: '/peca/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/categorias': typeof CategoriasRoute
-  '/pesquisa': typeof PesquisaRoute
-  '/colecao/$slug': typeof ColecaoSlugRoute
-  '/colecao/': typeof ColecaoIndexRoute
+  '/auth': typeof AuthRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/pesquisa': typeof AuthenticatedPesquisaRoute
+  '/publico/$slug': typeof PublicoSlugRoute
+  '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
+  '/peca/$id': typeof AuthenticatedPecaIdRoute
+  '/colecao/': typeof AuthenticatedColecaoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/categorias': typeof CategoriasRoute
-  '/pesquisa': typeof PesquisaRoute
-  '/colecao/$slug': typeof ColecaoSlugRoute
-  '/colecao': typeof ColecaoIndexRoute
+  '/auth': typeof AuthRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/pesquisa': typeof AuthenticatedPesquisaRoute
+  '/publico/$slug': typeof PublicoSlugRoute
+  '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
+  '/peca/$id': typeof AuthenticatedPecaIdRoute
+  '/colecao': typeof AuthenticatedColecaoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/categorias': typeof CategoriasRoute
-  '/pesquisa': typeof PesquisaRoute
-  '/colecao/$slug': typeof ColecaoSlugRoute
-  '/colecao/': typeof ColecaoIndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
+  '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/pesquisa': typeof AuthenticatedPesquisaRoute
+  '/publico/$slug': typeof PublicoSlugRoute
+  '/_authenticated/colecao/nova': typeof AuthenticatedColecaoNovaRoute
+  '/_authenticated/peca/$id': typeof AuthenticatedPecaIdRoute
+  '/_authenticated/colecao/': typeof AuthenticatedColecaoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categorias' | '/pesquisa' | '/colecao/$slug' | '/colecao/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/categorias'
+    | '/painel'
+    | '/pesquisa'
+    | '/publico/$slug'
+    | '/colecao/nova'
+    | '/peca/$id'
+    | '/colecao/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categorias' | '/pesquisa' | '/colecao/$slug' | '/colecao'
+  to:
+    | '/'
+    | '/auth'
+    | '/categorias'
+    | '/painel'
+    | '/pesquisa'
+    | '/publico/$slug'
+    | '/colecao/nova'
+    | '/peca/$id'
+    | '/colecao'
   id:
     | '__root__'
     | '/'
-    | '/categorias'
-    | '/pesquisa'
-    | '/colecao/$slug'
-    | '/colecao/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/categorias'
+    | '/_authenticated/painel'
+    | '/_authenticated/pesquisa'
+    | '/publico/$slug'
+    | '/_authenticated/colecao/nova'
+    | '/_authenticated/peca/$id'
+    | '/_authenticated/colecao/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CategoriasRoute: typeof CategoriasRoute
-  PesquisaRoute: typeof PesquisaRoute
-  ColecaoSlugRoute: typeof ColecaoSlugRoute
-  ColecaoIndexRoute: typeof ColecaoIndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  PublicoSlugRoute: typeof PublicoSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -94,43 +160,98 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/categorias': {
-      id: '/categorias'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/categorias': {
+      id: '/_authenticated/categorias'
       path: '/categorias'
       fullPath: '/categorias'
-      preLoaderRoute: typeof CategoriasRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/pesquisa': {
-      id: '/pesquisa'
+    '/_authenticated/painel': {
+      id: '/_authenticated/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof AuthenticatedPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pesquisa': {
+      id: '/_authenticated/pesquisa'
       path: '/pesquisa'
       fullPath: '/pesquisa'
-      preLoaderRoute: typeof PesquisaRouteImport
+      preLoaderRoute: typeof AuthenticatedPesquisaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/publico/$slug': {
+      id: '/publico/$slug'
+      path: '/publico/$slug'
+      fullPath: '/publico/$slug'
+      preLoaderRoute: typeof PublicoSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/colecao/': {
-      id: '/colecao/'
+    '/_authenticated/colecao/': {
+      id: '/_authenticated/colecao/'
       path: '/colecao'
       fullPath: '/colecao/'
-      preLoaderRoute: typeof ColecaoIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedColecaoIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/colecao/$slug': {
-      id: '/colecao/$slug'
-      path: '/colecao/$slug'
-      fullPath: '/colecao/$slug'
-      preLoaderRoute: typeof ColecaoSlugRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/colecao/nova': {
+      id: '/_authenticated/colecao/nova'
+      path: '/colecao/nova'
+      fullPath: '/colecao/nova'
+      preLoaderRoute: typeof AuthenticatedColecaoNovaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/peca/$id': {
+      id: '/_authenticated/peca/$id'
+      path: '/peca/$id'
+      fullPath: '/peca/$id'
+      preLoaderRoute: typeof AuthenticatedPecaIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
+  AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+  AuthenticatedPesquisaRoute: typeof AuthenticatedPesquisaRoute
+  AuthenticatedColecaoNovaRoute: typeof AuthenticatedColecaoNovaRoute
+  AuthenticatedPecaIdRoute: typeof AuthenticatedPecaIdRoute
+  AuthenticatedColecaoIndexRoute: typeof AuthenticatedColecaoIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
+  AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+  AuthenticatedPesquisaRoute: AuthenticatedPesquisaRoute,
+  AuthenticatedColecaoNovaRoute: AuthenticatedColecaoNovaRoute,
+  AuthenticatedPecaIdRoute: AuthenticatedPecaIdRoute,
+  AuthenticatedColecaoIndexRoute: AuthenticatedColecaoIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CategoriasRoute: CategoriasRoute,
-  PesquisaRoute: PesquisaRoute,
-  ColecaoSlugRoute: ColecaoSlugRoute,
-  ColecaoIndexRoute: ColecaoIndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  PublicoSlugRoute: PublicoSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

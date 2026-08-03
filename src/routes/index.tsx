@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, PageTitle } from "@/components/AppShell";
-import { PecaCard } from "@/components/PecaCard";
-import { atividade, estatisticas, formatEuro, listPecas } from "@/lib/collection";
+import { useAuth } from "@/hooks/useAuth";
+import { listPecasPublicas, type PecaPublica } from "@/lib/public.functions";
 
 export const Route = createFileRoute("/")({
+  loader: () => listPecasPublicas(),
   head: () => ({
     meta: [
       { title: "Curadoria — gestão de coleções privadas" },
@@ -21,65 +22,78 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Painel,
+  errorComponent: () => (
+    <AppShell>
+      <p className="text-muted-foreground">Não foi possível carregar as peças públicas.</p>
+    </AppShell>
+  ),
+  notFoundComponent: () => (
+    <AppShell>
+      <p className="text-muted-foreground">Página não encontrada.</p>
+    </AppShell>
+  ),
+  component: Inicio,
 });
 
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="plate p-5">
-      <p className="label-caps">{label}</p>
-      <p className="mt-2 font-display text-3xl">{value}</p>
-    </div>
-  );
-}
-
-function Painel() {
-  const stats = estatisticas();
-  const destaques = listPecas().slice(0, 3);
+function Inicio() {
+  const publicas = Route.useLoaderData() as PecaPublica[];
+  const { session } = useAuth();
 
   return (
     <AppShell>
       <PageTitle
-        eyebrow="Painel"
+        eyebrow="Curadoria digital"
         title="A sua coleção, tratada como um museu"
-        description="Registo museológico completo, estado de conservação, avaliação e investigação — com histórico de todas as alterações."
+        description="Ficha museológica por peça, conservação, certificados, dossiês e pesquisa avançada — com auditoria completa e acesso privado."
+        action={
+          <Link
+            to={session ? "/painel" : "/auth"}
+            className="border border-accent px-5 py-2.5 text-sm text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            {session ? "Ir para o painel" : "Entrar na plataforma"}
+          </Link>
+        }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric label="Peças inventariadas" value={String(stats.total)} />
-        <Metric label="Valor estimado" value={formatEuro(stats.valor)} />
-        <Metric label="Visíveis ao público" value={`${stats.publicas} de ${stats.total}`} />
-        <Metric label="A aguardar restauro" value={String(stats.aRestaurar)} />
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[
+          ["Inventário museológico", "Autoria, datação, materiais, proveniência, estado e avaliação."],
+          ["Conservação e restauro", "Histórico cronológico de intervenções e certificados."],
+          ["Investigação", "Pesquisa avançada, dossiês e registo de auditoria de tudo."],
+        ].map(([titulo, texto]) => (
+          <div key={titulo} className="plate p-6">
+            <h2 className="font-display text-2xl">{titulo}</h2>
+            <p className="mt-2 text-sm text-muted-foreground">{texto}</p>
+          </div>
+        ))}
       </div>
 
       <section className="mt-14">
-        <div className="rule-brass mb-6 flex items-end justify-between pb-3">
-          <h2 className="text-2xl">Entradas recentes</h2>
-          <Link to="/colecao" className="text-sm text-accent hover:underline">
-            Ver coleção completa
-          </Link>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {destaques.map((peca) => (
-            <PecaCard key={peca.id} peca={peca} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-14">
         <div className="rule-brass mb-6 pb-3">
-          <h2 className="text-2xl">Atividade registada</h2>
+          <h2 className="text-2xl">Peças em exibição pública</h2>
         </div>
-        <ul className="plate divide-y divide-border">
-          {atividade.map((item) => (
-            <li key={item.id} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-5 py-4">
-              <span className="label-caps w-24">{item.data}</span>
-              <span className="text-sm font-medium">{item.accao}</span>
-              <span className="text-sm text-muted-foreground">{item.alvo}</span>
-              <span className="label-caps ml-auto">{item.autor}</span>
-            </li>
-          ))}
-        </ul>
+        {publicas.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nenhuma peça está marcada como pública neste momento.
+          </p>
+        ) : (
+          <ul className="plate divide-y divide-border">
+            {publicas.map((p) => (
+              <li key={p.id}>
+                <Link
+                  to="/publico/$slug"
+                  params={{ slug: p.slug }}
+                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-5 py-4 hover:text-accent"
+                >
+                  <span className="font-display text-xl">{p.titulo}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {[p.autor, p.periodo ?? p.datacao].filter(Boolean).join(" · ")}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </AppShell>
   );

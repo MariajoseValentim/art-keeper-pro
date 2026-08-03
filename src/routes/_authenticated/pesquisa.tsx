@@ -1,18 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { PecaCard } from "@/components/PecaCard";
 import { Input } from "@/components/ui/input";
-import {
-  categorias,
-  estadoLabel,
-  listPecas,
-  raridadeLabel,
-  type Estado,
-  type Raridade,
-} from "@/lib/collection";
+import { estadoLabel, raridadeLabel } from "@/lib/collection";
+import { categoriasQuery, pecasQuery } from "@/lib/queries";
 
-export const Route = createFileRoute("/pesquisa")({
+export const Route = createFileRoute("/_authenticated/pesquisa")({
   head: () => ({
     meta: [
       { title: "Pesquisa avançada na coleção | Curadoria" },
@@ -54,24 +49,29 @@ function Chip({
 }
 
 function Pesquisa() {
+  const { data: pecas = [] } = useQuery(pecasQuery());
+  const { data: categorias = [] } = useQuery(categoriasQuery());
   const [texto, setTexto] = useState("");
   const [categoria, setCategoria] = useState<string | null>(null);
-  const [raridade, setRaridade] = useState<Raridade | null>(null);
-  const [estado, setEstado] = useState<Estado | null>(null);
+  const [raridade, setRaridade] = useState<string | null>(null);
+  const [estado, setEstado] = useState<string | null>(null);
 
   const resultados = useMemo(() => {
     const q = texto.trim().toLowerCase();
-    return listPecas().filter((p) => {
-      if (categoria && p.categoria !== categoria) return false;
+    return pecas.filter((p) => {
+      if (categoria && p.categoria_id !== categoria) return false;
       if (raridade && p.raridade !== raridade) return false;
       if (estado && p.estado !== estado) return false;
       if (!q) return true;
       return [p.titulo, p.autor, p.periodo, p.materiais, p.proveniencia, p.inventario]
+        .filter(Boolean)
         .join(" ")
         .toLowerCase()
         .includes(q);
     });
-  }, [texto, categoria, raridade, estado]);
+  }, [pecas, texto, categoria, raridade, estado]);
+
+  const catNome = (id: string | null) => categorias.find((c) => c.id === id)?.nome;
 
   return (
     <AppShell>
@@ -107,9 +107,9 @@ function Pesquisa() {
             <Chip activo={raridade === null} onClick={() => setRaridade(null)}>
               Todas
             </Chip>
-            {(Object.keys(raridadeLabel) as Raridade[]).map((r) => (
-              <Chip key={r} activo={raridade === r} onClick={() => setRaridade(r)}>
-                {raridadeLabel[r]}
+            {Object.entries(raridadeLabel).map(([k, l]) => (
+              <Chip key={k} activo={raridade === k} onClick={() => setRaridade(k)}>
+                {l}
               </Chip>
             ))}
           </div>
@@ -119,9 +119,9 @@ function Pesquisa() {
             <Chip activo={estado === null} onClick={() => setEstado(null)}>
               Todos
             </Chip>
-            {(Object.keys(estadoLabel) as Estado[]).map((e) => (
-              <Chip key={e} activo={estado === e} onClick={() => setEstado(e)}>
-                {estadoLabel[e]}
+            {Object.entries(estadoLabel).map(([k, l]) => (
+              <Chip key={k} activo={estado === k} onClick={() => setEstado(k)}>
+                {l}
               </Chip>
             ))}
           </div>
@@ -131,7 +131,7 @@ function Pesquisa() {
       <p className="label-caps mt-8">{resultados.length} resultados</p>
       <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {resultados.map((peca) => (
-          <PecaCard key={peca.id} peca={peca} />
+          <PecaCard key={peca.id} peca={peca} categoria={catNome(peca.categoria_id)} />
         ))}
       </div>
       {resultados.length === 0 ? (
