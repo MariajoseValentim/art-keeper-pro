@@ -16,7 +16,13 @@ function nomeFicheiro(path: string) {
   return path.split("/").pop() ?? path;
 }
 
-export function MediaPeca({ pecaId }: { pecaId: string }) {
+export function MediaPeca({
+  pecaId,
+  soLeitura = false,
+}: {
+  pecaId: string;
+  soLeitura?: boolean;
+}) {
   const queryClient = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const [aEnviar, setAEnviar] = useState(false);
