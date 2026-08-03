@@ -23,3 +23,7 @@ const g = globalThis as Record<string, unknown>;
 g["DOMMatrix"] ??= DOMMatrixStub;
 g["Path2D"] ??= Path2DStub;
 g["ImageData"] ??= class ImageDataStub {};
+
+// Node antigo não tem Promise.try, usado internamente pelo pdf.js.
+const P = Promise as unknown as { try?: (fn: (...a: unknown[]) => unknown, ...args: unknown[]) => Promise<unknown> };
+P.try ??= (fn, ...args) => new Promise((resolve) => resolve(fn(...args)));
