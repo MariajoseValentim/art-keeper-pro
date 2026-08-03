@@ -1,3 +1,5 @@
+import saoMiguel from "@/assets/sao-miguel.jpg";
+
 /**
  * Camada de dados da coleção.
  *
