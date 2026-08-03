@@ -154,11 +154,12 @@ export function ImportarExportar({
   };
 
   return (
+    <>
     <section className="plate no-imprimir p-5 sm:p-6">
       <h2 className="text-xl">Documentos</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Exporte o inventário para folha de cálculo ou arquivo, e importe registos a partir de CSV ou
-        JSON. As colunas seguem os campos da ficha museológica.
+        Exporte o inventário para folha de cálculo ou arquivo, imprima a listagem, e importe registos
+        a partir de CSV, JSON, PDF ou Word. As colunas seguem os campos da ficha museológica.
       </p>
       <hr className="gilt-rule my-4" />
       <div className="flex flex-wrap gap-3">
@@ -167,6 +168,14 @@ export function ImportarExportar({
         </button>
         <button type="button" className={botao} onClick={exportarJSON} disabled={!pecas.length}>
           <Download className="size-4" aria-hidden /> Exportar JSON
+        </button>
+        <button
+          type="button"
+          className={botao}
+          disabled={!pecas.length}
+          onClick={() => imprimirFicha("Inventário da coleção")}
+        >
+          <Printer className="size-4" aria-hidden /> Imprimir inventário / PDF
         </button>
         <button
           type="button"
@@ -186,7 +195,7 @@ export function ImportarExportar({
             <input
               ref={inputRef}
               type="file"
-              accept=".csv,.json,text/csv,application/json"
+              accept=".csv,.json,.pdf,.docx,.doc,.txt,.md,.rtf"
               className="sr-only"
               onChange={(e) => {
                 const f = e.target.files?.[0];
@@ -204,11 +213,46 @@ export function ImportarExportar({
               ) : (
                 <FileUp className="size-4" aria-hidden />
               )}
-              {aImportar ? "A importar…" : "Importar CSV / JSON"}
+              {aImportar ? "A importar…" : "Importar CSV / JSON / PDF / Word"}
             </button>
           </>
         ) : null}
       </div>
+      {podeImportar ? (
+        <p className="mt-4 text-xs text-muted-foreground">
+          Em PDF e Word, cada peça deve estar num bloco separado (nova página ou linha em branco) com
+          linhas no formato «Título: …», «Autor: …», «Datação: …».
+        </p>
+      ) : null}
     </section>
+
+    <div className="so-impressao area-impressao">
+      <h1>Inventário da coleção</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Inventário</th>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Datação</th>
+            <th>Categoria</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pecas.map((p) => (
+            <tr key={p.id}>
+              <td>{p.inventario ?? "—"}</td>
+              <td>{p.titulo}</td>
+              <td>{p.autor ?? "—"}</td>
+              <td>{p.datacao ?? "—"}</td>
+              <td>{nomeCategoria(p.categoria_id) || "—"}</td>
+              <td>{p.estado ?? "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    </>
   );
 }
