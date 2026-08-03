@@ -27,11 +27,21 @@ export const Route = createFileRoute("/_authenticated/categorias")({
 });
 
 function Categorias() {
+  return (
+    <ApenasEquipa>
+      <CategoriasConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function CategoriasConteudo() {
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
   const { data: categorias = [] } = useQuery(categoriasQuery());
   const { data: pecas = [] } = useQuery(pecasQuery());
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
+
 
   const criar = useMutation({
     mutationFn: async () => {
