@@ -176,21 +176,24 @@ export function MediaPeca({
             ficheiro.
           </p>
         </div>
-        <div>
-          <input
-            ref={inputRef}
-            id="upload-midia"
-            type="file"
-            multiple
-            accept="image/*,video/*"
-            className="sr-only"
-            onChange={(e) => enviar(e.target.files)}
-          />
-          <Button type="button" disabled={aEnviar} onClick={() => inputRef.current?.click()}>
-            {aEnviar ? "A carregar…" : "Carregar ficheiros"}
-          </Button>
-        </div>
+        {soLeitura ? null : (
+          <div>
+            <input
+              ref={inputRef}
+              id="upload-midia"
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              className="sr-only"
+              onChange={(e) => enviar(e.target.files)}
+            />
+            <Button type="button" disabled={aEnviar} onClick={() => inputRef.current?.click()}>
+              {aEnviar ? "A carregar…" : "Carregar ficheiros"}
+            </Button>
+          </div>
+        )}
       </div>
+
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">A carregar ficheiros…</p>
