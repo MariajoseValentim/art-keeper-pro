@@ -1,18 +1,20 @@
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Download, FileUp, Loader2 } from "lucide-react";
+import { Download, FileUp, Loader2, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify, type CategoriaRow, type PecaRow } from "@/lib/collection";
 import {
   COLUNAS_PECA,
   descarregar,
+  imprimirFicha,
   lerCSV,
   nomeFicheiro,
   normalizarPeca,
   paraCSV,
   type PecaImportada,
 } from "@/lib/documentos";
+import { EXTENSOES_TEXTO, extensao, extrairTexto, textoParaRegistos } from "@/lib/extracao";
 
 const botao =
   "inline-flex items-center gap-2 border border-border px-4 py-2 text-sm text-foreground transition-colors hover:border-accent hover:text-accent disabled:opacity-50";
