@@ -83,11 +83,27 @@ function Inicio() {
                 <Link
                   to="/publico/$slug"
                   params={{ slug: p.slug }}
-                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-5 py-4 hover:text-accent"
+                  className="flex items-center gap-4 px-5 py-4 hover:text-accent"
                 >
-                  <span className="font-display text-xl">{p.titulo}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {[p.autor, p.periodo ?? p.datacao].filter(Boolean).join(" · ")}
+                  <span className="size-16 shrink-0 overflow-hidden bg-muted">
+                    {p.capa ? (
+                      p.capa.video ? (
+                        <video src={p.capa.url} muted playsInline preload="metadata" className="size-full object-cover" />
+                      ) : (
+                        <img
+                          src={p.capa.url}
+                          alt={`Miniatura da peça ${p.titulo}`}
+                          loading="lazy"
+                          className="size-full object-cover"
+                        />
+                      )
+                    ) : null}
+                  </span>
+                  <span className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                    <span className="font-display text-xl">{p.titulo}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {[p.autor, p.periodo ?? p.datacao].filter(Boolean).join(" · ")}
+                    </span>
                   </span>
                 </Link>
               </li>
