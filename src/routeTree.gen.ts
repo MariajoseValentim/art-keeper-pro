@@ -10,33 +10,79 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CategoriasRouteImport } from './routes/categorias'
+import { Route as PesquisaRouteImport } from './routes/pesquisa'
+import { Route as ColecaoIndexRouteImport } from './routes/colecao/index'
+import { Route as ColecaoSlugRouteImport } from './routes/colecao/$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriasRoute = CategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesquisaRoute = PesquisaRouteImport.update({
+  id: '/pesquisa',
+  path: '/pesquisa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColecaoIndexRoute = ColecaoIndexRouteImport.update({
+  id: '/colecao/',
+  path: '/colecao/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColecaoSlugRoute = ColecaoSlugRouteImport.update({
+  id: '/colecao/$slug',
+  path: '/colecao/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/categorias': typeof CategoriasRoute
+  '/pesquisa': typeof PesquisaRoute
+  '/colecao/$slug': typeof ColecaoSlugRoute
+  '/colecao/': typeof ColecaoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/categorias': typeof CategoriasRoute
+  '/pesquisa': typeof PesquisaRoute
+  '/colecao/$slug': typeof ColecaoSlugRoute
+  '/colecao': typeof ColecaoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/categorias': typeof CategoriasRoute
+  '/pesquisa': typeof PesquisaRoute
+  '/colecao/$slug': typeof ColecaoSlugRoute
+  '/colecao/': typeof ColecaoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/categorias' | '/pesquisa' | '/colecao/$slug' | '/colecao/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/categorias' | '/pesquisa' | '/colecao/$slug' | '/colecao'
+  id:
+    | '__root__'
+    | '/'
+    | '/categorias'
+    | '/pesquisa'
+    | '/colecao/$slug'
+    | '/colecao/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CategoriasRoute: typeof CategoriasRoute
+  PesquisaRoute: typeof PesquisaRoute
+  ColecaoSlugRoute: typeof ColecaoSlugRoute
+  ColecaoIndexRoute: typeof ColecaoIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +94,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categorias': {
+      id: '/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof CategoriasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pesquisa': {
+      id: '/pesquisa'
+      path: '/pesquisa'
+      fullPath: '/pesquisa'
+      preLoaderRoute: typeof PesquisaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colecao/': {
+      id: '/colecao/'
+      path: '/colecao'
+      fullPath: '/colecao/'
+      preLoaderRoute: typeof ColecaoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colecao/$slug': {
+      id: '/colecao/$slug'
+      path: '/colecao/$slug'
+      fullPath: '/colecao/$slug'
+      preLoaderRoute: typeof ColecaoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CategoriasRoute: CategoriasRoute,
+  PesquisaRoute: PesquisaRoute,
+  ColecaoSlugRoute: ColecaoSlugRoute,
+  ColecaoIndexRoute: ColecaoIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
