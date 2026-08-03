@@ -22,7 +22,10 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
   const [aEnviar, setAEnviar] = useState(false);
   const { data: itens = [], isLoading } = useQuery(midiaQuery(pecaId));
 
-  const invalidar = () => queryClient.invalidateQueries({ queryKey: ["midia", pecaId] });
+  const invalidar = () => {
+    queryClient.invalidateQueries({ queryKey: ["midia", pecaId] });
+    queryClient.invalidateQueries({ queryKey: ["capas"] });
+  };
 
   async function enviar(files: FileList | null) {
     if (!files || files.length === 0) return;
