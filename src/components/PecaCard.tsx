@@ -2,7 +2,13 @@ import { Link } from "@tanstack/react-router";
 import type { PecaRow } from "@/lib/collection";
 import { estadoLabel, formatEuro, label, raridadeLabel } from "@/lib/collection";
 
-export function PecaCard({ peca, categoria }: { peca: PecaRow; categoria?: string }) {
+export function PecaCard({
+  peca,
+  categoria,
+}: {
+  peca: PecaRow;
+  categoria?: string | undefined;
+}) {
   return (
     <Link
       to="/peca/$id"
