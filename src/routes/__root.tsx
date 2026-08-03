@@ -80,11 +80,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Timeless Treasures — Curadoria de Coleções" },
+      { name: "description", content: "Plataforma de curadoria digital de nível museológico: peças, projetos, restauros, certificados e dossiês." },
+      { name: "author", content: "Timeless Treasures" },
+      { property: "og:title", content: "Timeless Treasures — Curadoria de Coleções" },
+      { property: "og:description", content: "Old things are never out of style. Curadoria digital de coleções privadas." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -111,9 +111,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt" className="dark">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('tt-tema')==='claro'){document.documentElement.classList.remove('dark')}}catch(e){}",
+          }}
+        />
       </head>
       <body>
         {children}
