@@ -1,5 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Printer } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { imprimirFicha } from "@/lib/documentos";
+
 import { getPecaPublica, type MidiaPublica } from "@/lib/public.functions";
 
 export const Route = createFileRoute("/publico/$slug")({
