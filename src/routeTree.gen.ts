@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPesquisaRouteImport } from './routes/_authenticated/pesquisa'
+import { Route as PublicoSlugRouteImport } from './routes/publico/$slug'
 import { Route as AuthenticatedColecaoIndexRouteImport } from './routes/_authenticated/colecao/index'
 import { Route as AuthenticatedColecaoNovaRouteImport } from './routes/_authenticated/colecao/nova'
 import { Route as AuthenticatedPecaIdRouteImport } from './routes/_authenticated/peca/$id'
@@ -48,6 +49,11 @@ const AuthenticatedPesquisaRoute = AuthenticatedPesquisaRouteImport.update({
   path: '/pesquisa',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const PublicoSlugRoute = PublicoSlugRouteImport.update({
+  id: '/publico/$slug',
+  path: '/publico/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedColecaoIndexRoute =
   AuthenticatedColecaoIndexRouteImport.update({
     id: '/colecao/',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pesquisa': typeof AuthenticatedPesquisaRoute
+  '/publico/$slug': typeof PublicoSlugRoute
   '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/peca/$id': typeof AuthenticatedPecaIdRoute
   '/colecao/': typeof AuthenticatedColecaoIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pesquisa': typeof AuthenticatedPesquisaRoute
+  '/publico/$slug': typeof PublicoSlugRoute
   '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/peca/$id': typeof AuthenticatedPecaIdRoute
   '/colecao': typeof AuthenticatedColecaoIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/pesquisa': typeof AuthenticatedPesquisaRoute
+  '/publico/$slug': typeof PublicoSlugRoute
   '/_authenticated/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/_authenticated/peca/$id': typeof AuthenticatedPecaIdRoute
   '/_authenticated/colecao/': typeof AuthenticatedColecaoIndexRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/painel'
     | '/pesquisa'
+    | '/publico/$slug'
     | '/colecao/nova'
     | '/peca/$id'
     | '/colecao/'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/painel'
     | '/pesquisa'
+    | '/publico/$slug'
     | '/colecao/nova'
     | '/peca/$id'
     | '/colecao'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/_authenticated/categorias'
     | '/_authenticated/painel'
     | '/_authenticated/pesquisa'
+    | '/publico/$slug'
     | '/_authenticated/colecao/nova'
     | '/_authenticated/peca/$id'
     | '/_authenticated/colecao/'
@@ -136,6 +148,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PublicoSlugRoute: typeof PublicoSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pesquisa'
       preLoaderRoute: typeof AuthenticatedPesquisaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/publico/$slug': {
+      id: '/publico/$slug'
+      path: '/publico/$slug'
+      fullPath: '/publico/$slug'
+      preLoaderRoute: typeof PublicoSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/colecao/': {
       id: '/_authenticated/colecao/'
@@ -231,6 +251,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PublicoSlugRoute: PublicoSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
