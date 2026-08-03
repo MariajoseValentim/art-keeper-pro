@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AppShell, PageTitle } from "@/components/AppShell";
+import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { PecaCard } from "@/components/PecaCard";
 import { Input } from "@/components/ui/input";
 import { estadoLabel, raridadeLabel } from "@/lib/collection";
