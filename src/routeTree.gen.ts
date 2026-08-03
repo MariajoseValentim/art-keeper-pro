@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedColecaoIndexRouteImport } from './routes/_authenticated/colecao/index'
 import { Route as AuthenticatedColecaoNovaRouteImport } from './routes/_authenticated/colecao/nova'
@@ -30,6 +31,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
@@ -57,6 +63,7 @@ const AuthenticatedPecaIdRoute = AuthenticatedPecaIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/peca/$id': typeof AuthenticatedPecaIdRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/peca/$id': typeof AuthenticatedPecaIdRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/_authenticated/peca/$id': typeof AuthenticatedPecaIdRoute
@@ -83,14 +92,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/painel' | '/colecao/nova' | '/peca/$id' | '/colecao/'
+    | '/'
+    | '/auth'
+    | '/categorias'
+    | '/painel'
+    | '/colecao/nova'
+    | '/peca/$id'
+    | '/colecao/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/painel' | '/colecao/nova' | '/peca/$id' | '/colecao'
+  to:
+    | '/'
+    | '/auth'
+    | '/categorias'
+    | '/painel'
+    | '/colecao/nova'
+    | '/peca/$id'
+    | '/colecao'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/categorias'
     | '/_authenticated/painel'
     | '/_authenticated/colecao/nova'
     | '/_authenticated/peca/$id'
@@ -126,6 +149,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/categorias': {
+      id: '/_authenticated/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/painel': {
       id: '/_authenticated/painel'
       path: '/painel'
@@ -158,6 +188,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedColecaoNovaRoute: typeof AuthenticatedColecaoNovaRoute
   AuthenticatedPecaIdRoute: typeof AuthenticatedPecaIdRoute
@@ -165,6 +196,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedColecaoNovaRoute: AuthenticatedColecaoNovaRoute,
   AuthenticatedPecaIdRoute: AuthenticatedPecaIdRoute,
