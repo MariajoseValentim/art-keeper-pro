@@ -151,15 +151,17 @@ function CategoriasConteudo() {
                 {c.descricao ? (
                   <p className="mt-2 text-sm text-muted-foreground">{c.descricao}</p>
                 ) : null}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm(`Eliminar a categoria "${c.nome}"?`)) eliminar.mutate(c.id);
-                  }}
-                  className="mt-4 text-xs text-muted-foreground hover:text-accent"
-                >
-                  Eliminar
-                </button>
+                {isAdmin ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Eliminar a categoria "${c.nome}"?`)) eliminar.mutate(c.id);
+                    }}
+                    className="mt-4 text-xs text-muted-foreground hover:text-accent"
+                  >
+                    Eliminar
+                  </button>
+                ) : null}
               </div>
             );
           })}
