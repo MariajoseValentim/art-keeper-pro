@@ -172,7 +172,7 @@ export function PecaForm({
       <fieldset disabled={soLeitura} className="space-y-8 disabled:opacity-90">
 
       <div className="grid gap-5 md:grid-cols-2">
-        <Campo id="titulo" rotulo="Título *">
+        <Campo id="titulo" rotulo="Título *" erro={erros.titulo}>
           <Input
             id="titulo"
             required
@@ -180,17 +180,17 @@ export function PecaForm({
             onChange={(e) => set("titulo", e.target.value)}
           />
         </Campo>
-        <Campo id="inventario" rotulo="Nº de inventário">
+        <Campo id="inventario" rotulo="Nº de inventário" erro={erros.inventario}>
           <Input
             id="inventario"
             value={v.inventario ?? ""}
             onChange={(e) => set("inventario", e.target.value)}
           />
         </Campo>
-        <Campo id="autor" rotulo="Autoria">
+        <Campo id="autor" rotulo="Autoria" erro={erros.autor}>
           <Input id="autor" value={v.autor ?? ""} onChange={(e) => set("autor", e.target.value)} />
         </Campo>
-        <Campo id="periodo" rotulo="Período / datação">
+        <Campo id="periodo" rotulo="Período / datação" erro={erros.periodo}>
           <Input
             id="periodo"
             value={v.periodo ?? ""}
@@ -212,35 +212,35 @@ export function PecaForm({
             ))}
           </select>
         </Campo>
-        <Campo id="localizacao" rotulo="Localização">
+        <Campo id="localizacao" rotulo="Localização" erro={erros.localizacao}>
           <Input
             id="localizacao"
             value={v.localizacao ?? ""}
             onChange={(e) => set("localizacao", e.target.value)}
           />
         </Campo>
-        <Campo id="materiais" rotulo="Materiais">
+        <Campo id="materiais" rotulo="Materiais" erro={erros.materiais}>
           <Input
             id="materiais"
             value={v.materiais ?? ""}
             onChange={(e) => set("materiais", e.target.value)}
           />
         </Campo>
-        <Campo id="tecnica" rotulo="Técnica">
+        <Campo id="tecnica" rotulo="Técnica" erro={erros.tecnica}>
           <Input
             id="tecnica"
             value={v.tecnica ?? ""}
             onChange={(e) => set("tecnica", e.target.value)}
           />
         </Campo>
-        <Campo id="dimensoes" rotulo="Dimensões">
+        <Campo id="dimensoes" rotulo="Dimensões" erro={erros.dimensoes}>
           <Input
             id="dimensoes"
             value={v.dimensoes ?? ""}
             onChange={(e) => set("dimensoes", e.target.value)}
           />
         </Campo>
-        <Campo id="valor" rotulo="Valor estimado (EUR)">
+        <Campo id="valor" rotulo="Valor estimado (EUR)" erro={erros.valor_estimado}>
           <Input
             id="valor"
             type="number"
@@ -291,7 +291,7 @@ export function PecaForm({
             ))}
           </select>
         </Campo>
-        <Campo id="aquisicao" rotulo="Data de aquisição">
+        <Campo id="aquisicao" rotulo="Data de aquisição" erro={erros.data_aquisicao}>
           <Input
             id="aquisicao"
             type="date"
@@ -301,7 +301,7 @@ export function PecaForm({
         </Campo>
       </div>
 
-      <Campo id="proveniencia" rotulo="Proveniência">
+      <Campo id="proveniencia" rotulo="Proveniência" erro={erros.proveniencia}>
         <Textarea
           id="proveniencia"
           rows={3}
@@ -309,7 +309,7 @@ export function PecaForm({
           onChange={(e) => set("proveniencia", e.target.value)}
         />
       </Campo>
-      <Campo id="descricao" rotulo="Descrição">
+      <Campo id="descricao" rotulo="Descrição" erro={erros.descricao}>
         <Textarea
           id="descricao"
           rows={4}
@@ -317,7 +317,7 @@ export function PecaForm({
           onChange={(e) => set("descricao", e.target.value)}
         />
       </Campo>
-      <Campo id="notas" rotulo="Notas privadas (nunca públicas)">
+      <Campo id="notas" rotulo="Notas privadas (nunca públicas)" erro={erros.notas_privadas}>
         <Textarea
           id="notas"
           rows={3}
