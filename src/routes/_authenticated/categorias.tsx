@@ -100,34 +100,41 @@ function CategoriasConteudo() {
         description="Estrutura de classificação usada em toda a plataforma — fichas, dossiês e pesquisa avançada."
       />
 
-      <form
-        className="plate mb-10 grid gap-4 p-6 md:grid-cols-[1fr_1.4fr_auto] md:items-end"
-        onSubmit={(e) => {
-          e.preventDefault();
-          criar.mutate();
-        }}
-      >
-        <div className="space-y-2">
-          <label htmlFor="nome" className="label-caps">
-            Nome
-          </label>
-          <Input id="nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="descricao" className="label-caps">
-            Descrição
-          </label>
-          <Input
-            id="descricao"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            placeholder="Óleo, têmpera e técnicas mistas…"
-          />
-        </div>
-        <Button type="submit" disabled={criar.isPending}>
-          Adicionar
-        </Button>
-      </form>
+      {isAdmin ? (
+        <form
+          className="plate mb-10 grid gap-4 p-6 md:grid-cols-[1fr_1.4fr_auto] md:items-end"
+          onSubmit={(e) => {
+            e.preventDefault();
+            criar.mutate();
+          }}
+        >
+          <div className="space-y-2">
+            <label htmlFor="nome" className="label-caps">
+              Nome
+            </label>
+            <Input id="nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="descricao" className="label-caps">
+              Descrição
+            </label>
+            <Input
+              id="descricao"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Óleo, têmpera e técnicas mistas…"
+            />
+          </div>
+          <Button type="submit" disabled={criar.isPending}>
+            Adicionar
+          </Button>
+        </form>
+      ) : (
+        <p className="plate mb-10 p-6 text-sm text-muted-foreground">
+          Consulta apenas — só administradores podem criar ou eliminar categorias.
+        </p>
+      )}
+
 
       {categorias.length === 0 ? (
         <p className="text-sm text-muted-foreground">Ainda não criou categorias.</p>
