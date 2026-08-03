@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { useAuth } from "@/hooks/useAuth";
-import { listPecasPublicas } from "@/lib/public.functions";
+import { listPecasPublicas, type PecaPublica } from "@/lib/public.functions";
 
 export const Route = createFileRoute("/")({
   loader: () => listPecasPublicas(),
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Inicio() {
-  const publicas = Route.useLoaderData();
+  const publicas = Route.useLoaderData() as PecaPublica[];
   const { session } = useAuth();
 
   return (
