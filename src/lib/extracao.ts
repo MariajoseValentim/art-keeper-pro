@@ -10,7 +10,12 @@ const SEM_ACENTOS = (t: string) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
+    // "Nº", "N.º", "N°" e afins aparecem em muitas fichas: normalizamos para "n".
+    .replace(/[º°ª]/g, "")
+    .replace(/\./g, " ")
+    .replace(/\s+/g, " ")
     .trim();
+
 
 /** Sinónimos aceites nas etiquetas dos documentos → coluna da ficha. */
 const ALIAS: Record<string, string> = {
