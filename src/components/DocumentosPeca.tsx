@@ -137,6 +137,9 @@ export function DocumentosPeca({
         </div>
       ) : null}
 
+      {!soLeitura ? <DigitalizarDocumento pecaId={pecaId} /> : null}
+
+
       <div className="mt-5">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">A carregar documentos…</p>
