@@ -108,6 +108,9 @@ function FichaPeca() {
           if (confirm("Eliminar definitivamente esta peça?")) eliminar.mutate();
         }}
       />
+      <div className="mt-10">
+        <MediaPeca pecaId={peca.id} />
+      </div>
     </AppShell>
   );
 }
