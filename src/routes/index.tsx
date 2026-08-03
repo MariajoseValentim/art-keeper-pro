@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Curadoria — gestão de coleções privadas" },
       {
         property: "og:description",
-        content: "Fichas museológicas, conservação, certificados e investigação numa só plataforma.",
+        content: "Plataforma de curadoria digital para coleções privadas: fichas museológicas, conservação, certificados e investigação.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
