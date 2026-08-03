@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -6,6 +7,7 @@ import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { useAuth } from "@/hooks/useAuth";
 import { PecaForm, type PecaFormValues } from "@/components/PecaForm";
 import { MediaPeca } from "@/components/MediaPeca";
+import { FichaMuseologica } from "@/components/FichaMuseologica";
 import { supabase } from "@/integrations/supabase/client";
 import { categoriasQuery, pecaQuery } from "@/lib/queries";
 
@@ -41,6 +43,7 @@ function FichaPecaConteudo() {
   const { isAdmin } = useAuth();
   const { data: peca, isLoading } = useQuery(pecaQuery(id));
   const { data: categorias = [] } = useQuery(categoriasQuery());
+  const [vista, setVista] = useState<"ficha" | "edicao">("ficha");
 
 
   const guardar = useMutation({
@@ -112,6 +115,26 @@ function FichaPecaConteudo() {
           ) : null
         }
       />
+      <div className="mb-8 inline-flex rounded-sm border border-border p-1">
+        {(["ficha", "edicao"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setVista(v)}
+            className={`rounded-sm px-4 py-2 text-sm transition-colors duration-200 ${
+              vista === v
+                ? "bg-secondary text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {v === "ficha" ? "Ficha museológica" : isAdmin ? "Edição" : "Dados técnicos"}
+          </button>
+        ))}
+      </div>
+
+      {vista === "ficha" ? (
+        <FichaMuseologica peca={peca} categorias={categorias} />
+      ) : (
       <PecaForm
         peca={peca}
         categorias={categorias}
@@ -126,6 +149,7 @@ function FichaPecaConteudo() {
             }
           : {})}
       />
+      )}
       <div className="mt-10">
         <MediaPeca pecaId={peca.id} soLeitura={!isAdmin} />
       </div>
