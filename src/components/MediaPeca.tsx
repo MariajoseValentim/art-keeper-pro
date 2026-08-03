@@ -41,7 +41,7 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
         const path = `${uid}/${pecaId}/${crypto.randomUUID()}.${ext}`;
         const { error: upErr } = await supabase.storage
           .from(BUCKET)
-          .upload(path, file, { contentType: file.type || undefined, upsert: false });
+          .upload(path, file, { contentType: file.type || "application/octet-stream", upsert: false });
         if (upErr) throw upErr;
 
         const { error: dbErr } = await supabase.from("fotografias").insert({
