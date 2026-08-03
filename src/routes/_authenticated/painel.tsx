@@ -32,6 +32,14 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 function Painel() {
+  return (
+    <ApenasEquipa>
+      <PainelConteudo />
+    </ApenasEquipa>
+  );
+}
+
+function PainelConteudo() {
   const { data: pecas = [], isLoading } = useQuery(pecasQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
   const { data: registos = [] } = useQuery(auditoriaQuery());
