@@ -86,9 +86,11 @@ export function PecaForm({
       className="plate space-y-8 p-6"
       onSubmit={(e) => {
         e.preventDefault();
+        if (soLeitura) return;
         onSubmit({ ...v, slug: v.slug.trim() || slugify(v.titulo) || crypto.randomUUID() });
       }}
     >
+      <fieldset disabled={soLeitura} className="space-y-8 disabled:opacity-90">
       <div className="grid gap-5 md:grid-cols-2">
         <Campo id="titulo" rotulo="Título *">
           <Input
