@@ -5,18 +5,19 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Curadoria — design system "Museu clássico".
- * Pergaminho, tinta, latão. Serifa para títulos, sans para dados.
+ * Timeless Treasures — design system "Museu clássico".
+ * Marfim, creme, bege, castanho-escuro e dourado discreto.
+ * Serifa clássica para títulos, sans moderna para dados.
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-3xl: calc(var(--radius) + 14px);
+  --radius-4xl: calc(var(--radius) + 18px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -41,6 +42,8 @@
   --color-brass-soft: var(--brass-soft);
   --color-parchment: var(--parchment);
   --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -56,82 +59,104 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
-  --shadow-frame: 0 1px 0 var(--brass-soft), 0 18px 40px -28px oklch(0.25 0.03 70 / 55%);
-  --shadow-plate: 0 24px 60px -40px oklch(0.2 0.03 70 / 60%);
+  --shadow-frame: var(--elev-1);
+  --shadow-plate: var(--elev-2);
+  --ease-museum: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Tema claro — marfim, creme, bege, dourado discreto. */
 :root {
-  --radius: 0.25rem;
-  --parchment: oklch(0.968 0.014 88);
-  --ink: oklch(0.21 0.012 60);
-  --background: oklch(0.968 0.014 88);
-  --foreground: oklch(0.21 0.012 60);
-  --card: oklch(0.987 0.008 90);
-  --card-foreground: oklch(0.21 0.012 60);
-  --popover: oklch(0.987 0.008 90);
-  --popover-foreground: oklch(0.21 0.012 60);
-  --primary: oklch(0.24 0.014 62);
-  --primary-foreground: oklch(0.97 0.014 88);
-  --secondary: oklch(0.925 0.019 85);
-  --secondary-foreground: oklch(0.28 0.015 62);
-  --muted: oklch(0.932 0.016 86);
-  --muted-foreground: oklch(0.49 0.018 68);
-  --accent: oklch(0.585 0.072 68);
-  --accent-foreground: oklch(0.98 0.01 88);
-  --brass: oklch(0.585 0.072 68);
-  --brass-soft: oklch(0.855 0.032 82);
+  --radius: 0.125rem;
+  --parchment: oklch(0.972 0.013 88);
+  --ink: oklch(0.235 0.018 55);
+  --background: oklch(0.972 0.013 88);
+  --foreground: oklch(0.235 0.018 55);
+  --surface: oklch(0.99 0.007 90);
+  --surface-2: oklch(0.945 0.016 86);
+  --card: oklch(0.99 0.007 90);
+  --card-foreground: oklch(0.235 0.018 55);
+  --popover: oklch(0.99 0.007 90);
+  --popover-foreground: oklch(0.235 0.018 55);
+  --primary: oklch(0.28 0.025 52);
+  --primary-foreground: oklch(0.975 0.012 88);
+  --secondary: oklch(0.932 0.018 84);
+  --secondary-foreground: oklch(0.3 0.022 55);
+  --muted: oklch(0.938 0.015 86);
+  --muted-foreground: oklch(0.5 0.021 62);
+  --accent: oklch(0.615 0.079 72);
+  --accent-foreground: oklch(0.985 0.01 88);
+  --brass: oklch(0.615 0.079 72);
+  --brass-soft: oklch(0.862 0.037 82);
   --destructive: oklch(0.505 0.16 27);
   --destructive-foreground: oklch(0.98 0.01 88);
-  --border: oklch(0.878 0.021 84);
-  --input: oklch(0.878 0.021 84);
-  --ring: oklch(0.585 0.072 68);
-  --chart-1: oklch(0.585 0.072 68);
-  --chart-2: oklch(0.45 0.05 150);
-  --chart-3: oklch(0.4 0.06 250);
-  --chart-4: oklch(0.7 0.09 80);
+  --border: oklch(0.884 0.021 84);
+  --input: oklch(0.884 0.021 84);
+  --ring: oklch(0.615 0.079 72);
+  --chart-1: oklch(0.615 0.079 72);
+  --chart-2: oklch(0.48 0.05 150);
+  --chart-3: oklch(0.42 0.06 250);
+  --chart-4: oklch(0.72 0.09 80);
   --chart-5: oklch(0.55 0.12 30);
-  --sidebar: oklch(0.945 0.017 86);
-  --sidebar-foreground: oklch(0.24 0.012 60);
-  --sidebar-primary: oklch(0.24 0.014 62);
-  --sidebar-primary-foreground: oklch(0.97 0.014 88);
-  --sidebar-accent: oklch(0.912 0.023 84);
-  --sidebar-accent-foreground: oklch(0.24 0.012 60);
-  --sidebar-border: oklch(0.872 0.022 84);
-  --sidebar-ring: oklch(0.585 0.072 68);
+  --sidebar: oklch(0.952 0.016 86);
+  --sidebar-foreground: oklch(0.26 0.018 55);
+  --sidebar-primary: oklch(0.28 0.025 52);
+  --sidebar-primary-foreground: oklch(0.975 0.012 88);
+  --sidebar-accent: oklch(0.918 0.022 84);
+  --sidebar-accent-foreground: oklch(0.26 0.018 55);
+  --sidebar-border: oklch(0.878 0.022 84);
+  --sidebar-ring: oklch(0.615 0.079 72);
+  --elev-1: 0 1px 2px oklch(0.3 0.03 60 / 6%), 0 12px 30px -24px oklch(0.28 0.03 60 / 45%);
+  --elev-2: 0 1px 0 oklch(1 0 0 / 60%) inset, 0 26px 60px -42px oklch(0.25 0.03 60 / 55%);
+  --gradient-gilt: linear-gradient(
+    100deg,
+    transparent 0%,
+    color-mix(in oklab, var(--brass) 55%, transparent) 45%,
+    color-mix(in oklab, var(--brass) 18%, transparent) 100%
+  );
 }
 
+/* Tema escuro (predefinido) — sala de museu com luz baixa. */
 .dark {
-  --parchment: oklch(0.22 0.012 70);
-  --ink: oklch(0.95 0.012 88);
-  --background: oklch(0.19 0.011 68);
-  --foreground: oklch(0.95 0.012 88);
-  --card: oklch(0.235 0.013 68);
-  --card-foreground: oklch(0.95 0.012 88);
-  --popover: oklch(0.235 0.013 68);
-  --popover-foreground: oklch(0.95 0.012 88);
-  --primary: oklch(0.93 0.014 86);
-  --primary-foreground: oklch(0.22 0.012 66);
-  --secondary: oklch(0.29 0.015 70);
-  --secondary-foreground: oklch(0.95 0.012 88);
-  --muted: oklch(0.29 0.015 70);
-  --muted-foreground: oklch(0.72 0.02 80);
-  --accent: oklch(0.68 0.078 72);
-  --accent-foreground: oklch(0.2 0.012 66);
-  --brass: oklch(0.68 0.078 72);
-  --brass-soft: oklch(0.36 0.03 72);
-  --destructive: oklch(0.6 0.17 27);
+  --parchment: oklch(0.24 0.014 60);
+  --ink: oklch(0.955 0.012 88);
+  --background: oklch(0.168 0.011 58);
+  --foreground: oklch(0.945 0.012 86);
+  --surface: oklch(0.212 0.014 58);
+  --surface-2: oklch(0.252 0.015 58);
+  --card: oklch(0.212 0.014 58);
+  --card-foreground: oklch(0.945 0.012 86);
+  --popover: oklch(0.212 0.014 58);
+  --popover-foreground: oklch(0.945 0.012 86);
+  --primary: oklch(0.93 0.016 84);
+  --primary-foreground: oklch(0.2 0.014 58);
+  --secondary: oklch(0.272 0.016 60);
+  --secondary-foreground: oklch(0.945 0.012 86);
+  --muted: oklch(0.268 0.015 60);
+  --muted-foreground: oklch(0.735 0.021 78);
+  --accent: oklch(0.735 0.086 76);
+  --accent-foreground: oklch(0.19 0.014 58);
+  --brass: oklch(0.735 0.086 76);
+  --brass-soft: oklch(0.36 0.033 70);
+  --destructive: oklch(0.62 0.17 27);
   --destructive-foreground: oklch(0.97 0.01 88);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.68 0.078 72);
-  --sidebar: oklch(0.22 0.012 68);
-  --sidebar-foreground: oklch(0.95 0.012 88);
-  --sidebar-primary: oklch(0.68 0.078 72);
-  --sidebar-primary-foreground: oklch(0.2 0.012 66);
-  --sidebar-accent: oklch(0.29 0.015 70);
-  --sidebar-accent-foreground: oklch(0.95 0.012 88);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.68 0.078 72);
+  --border: oklch(0.82 0.03 80 / 16%);
+  --input: oklch(0.82 0.03 80 / 20%);
+  --ring: oklch(0.735 0.086 76);
+  --chart-1: oklch(0.735 0.086 76);
+  --chart-2: oklch(0.68 0.08 150);
+  --chart-3: oklch(0.66 0.09 250);
+  --chart-4: oklch(0.8 0.09 80);
+  --chart-5: oklch(0.68 0.13 30);
+  --sidebar: oklch(0.196 0.013 58);
+  --sidebar-foreground: oklch(0.945 0.012 86);
+  --sidebar-primary: oklch(0.735 0.086 76);
+  --sidebar-primary-foreground: oklch(0.19 0.014 58);
+  --sidebar-accent: oklch(0.268 0.015 60);
+  --sidebar-accent-foreground: oklch(0.945 0.012 86);
+  --sidebar-border: oklch(0.82 0.03 80 / 16%);
+  --sidebar-ring: oklch(0.735 0.086 76);
+  --elev-1: 0 1px 2px oklch(0 0 0 / 40%), 0 14px 34px -26px oklch(0 0 0 / 75%);
+  --elev-2: 0 1px 0 oklch(1 0 0 / 6%) inset, 0 30px 70px -46px oklch(0 0 0 / 85%);
 }
 
 @layer base {
@@ -139,11 +164,22 @@
     border-color: var(--color-border);
   }
 
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "tnum";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
@@ -151,7 +187,31 @@
   h3 {
     font-family: var(--font-display);
     font-weight: 500;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.012em;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--brass) 35%, transparent);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--brass) 30%, transparent);
+    border-radius: 999px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -166,8 +226,78 @@
   border-bottom: 1px solid var(--brass-soft);
 }
 
+/* Superfície base de cartão/tabela/formulário. */
 @utility plate {
   background-color: var(--card);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-frame);
+  box-shadow: var(--elev-1);
+  border-radius: var(--radius-lg);
+}
+
+/* Cartão com acabamento premium: filete dourado no topo e elevação suave. */
+@utility plate-gilt {
+  position: relative;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--elev-1);
+  border-radius: var(--radius-lg);
+  transition:
+    box-shadow 200ms var(--ease-museum),
+    transform 200ms var(--ease-museum),
+    border-color 200ms var(--ease-museum);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: var(--gradient-gilt, linear-gradient(90deg, transparent, var(--brass), transparent));
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  &:hover {
+    box-shadow: var(--elev-2);
+    border-color: color-mix(in oklab, var(--brass) 40%, var(--border));
+    transform: translateY(-2px);
+  }
+}
+
+/* Moldura para fotografias das peças. */
+@utility frame-art {
+  background: var(--surface-2);
+  border: 1px solid color-mix(in oklab, var(--brass) 22%, var(--border));
+  box-shadow: var(--elev-1);
+  overflow: hidden;
+}
+
+/* Filete dourado horizontal decorativo. */
+@utility gilt-rule {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--brass) 60%, transparent),
+    transparent
+  );
+}
+
+@utility text-gilt {
+  color: var(--brass);
+}
+
+@utility fade-up {
+  animation: fade-up 320ms var(--ease-museum) both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
