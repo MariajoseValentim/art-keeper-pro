@@ -65,6 +65,45 @@ export function MediaPeca({ pecaId }: { pecaId: string }) {
     }
   }
 
+  const reordenar = useMutation({
+    mutationFn: async (novaLista: MidiaItem[]) => {
+      const alteradas = novaLista
+        .map((item, idx) => ({ item, idx }))
+        .filter(({ item, idx }) => item.ordem !== idx);
+      for (const { item, idx } of alteradas) {
+        const { error } = await supabase
+          .from("fotografias")
+          .update({ ordem: idx })
+          .eq("id", item.id);
+        if (error) throw error;
+      }
+    },
+    onMutate: async (novaLista) => {
+      await queryClient.cancelQueries({ queryKey: ["midia", pecaId] });
+      const anterior = queryClient.getQueryData<MidiaItem[]>(["midia", pecaId]);
+      queryClient.setQueryData<MidiaItem[]>(
+        ["midia", pecaId],
+        novaLista.map((item, idx) => ({ ...item, ordem: idx })),
+      );
+      return { anterior };
+    },
+    onError: (e, _v, ctx) => {
+      if (ctx?.anterior) queryClient.setQueryData(["midia", pecaId], ctx.anterior);
+      toast.error(e instanceof Error ? e.message : "Não foi possível reordenar.");
+    },
+    onSettled: () => invalidar(),
+  });
+
+  function mover(index: number, direcao: -1 | 1) {
+    const destino = index + direcao;
+    if (destino < 0 || destino >= itens.length) return;
+    const lista = [...itens];
+    const [movido] = lista.splice(index, 1);
+    lista.splice(destino, 0, movido);
+    reordenar.mutate(lista);
+  }
+
+
   const eliminar = useMutation({
     mutationFn: async (item: MidiaItem) => {
       const { error: sErr } = await supabase.storage.from(BUCKET).remove([item.storage_path]);
