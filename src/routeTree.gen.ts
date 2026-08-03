@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as AuthenticatedPesquisaRouteImport } from './routes/_authenticated/pesquisa'
 import { Route as AuthenticatedColecaoIndexRouteImport } from './routes/_authenticated/colecao/index'
 import { Route as AuthenticatedColecaoNovaRouteImport } from './routes/_authenticated/colecao/nova'
 import { Route as AuthenticatedPecaIdRouteImport } from './routes/_authenticated/peca/$id'
@@ -42,6 +43,11 @@ const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   path: '/painel',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPesquisaRoute = AuthenticatedPesquisaRouteImport.update({
+  id: '/pesquisa',
+  path: '/pesquisa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedColecaoIndexRoute =
   AuthenticatedColecaoIndexRouteImport.update({
     id: '/colecao/',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/pesquisa': typeof AuthenticatedPesquisaRoute
   '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/peca/$id': typeof AuthenticatedPecaIdRoute
   '/colecao/': typeof AuthenticatedColecaoIndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/pesquisa': typeof AuthenticatedPesquisaRoute
   '/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/peca/$id': typeof AuthenticatedPecaIdRoute
   '/colecao': typeof AuthenticatedColecaoIndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/pesquisa': typeof AuthenticatedPesquisaRoute
   '/_authenticated/colecao/nova': typeof AuthenticatedColecaoNovaRoute
   '/_authenticated/peca/$id': typeof AuthenticatedPecaIdRoute
   '/_authenticated/colecao/': typeof AuthenticatedColecaoIndexRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/categorias'
     | '/painel'
+    | '/pesquisa'
     | '/colecao/nova'
     | '/peca/$id'
     | '/colecao/'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/categorias'
     | '/painel'
+    | '/pesquisa'
     | '/colecao/nova'
     | '/peca/$id'
     | '/colecao'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/categorias'
     | '/_authenticated/painel'
+    | '/_authenticated/pesquisa'
     | '/_authenticated/colecao/nova'
     | '/_authenticated/peca/$id'
     | '/_authenticated/colecao/'
@@ -163,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pesquisa': {
+      id: '/_authenticated/pesquisa'
+      path: '/pesquisa'
+      fullPath: '/pesquisa'
+      preLoaderRoute: typeof AuthenticatedPesquisaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/colecao/': {
       id: '/_authenticated/colecao/'
       path: '/colecao'
@@ -190,6 +209,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+  AuthenticatedPesquisaRoute: typeof AuthenticatedPesquisaRoute
   AuthenticatedColecaoNovaRoute: typeof AuthenticatedColecaoNovaRoute
   AuthenticatedPecaIdRoute: typeof AuthenticatedPecaIdRoute
   AuthenticatedColecaoIndexRoute: typeof AuthenticatedColecaoIndexRoute
@@ -198,6 +218,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+  AuthenticatedPesquisaRoute: AuthenticatedPesquisaRoute,
   AuthenticatedColecaoNovaRoute: AuthenticatedColecaoNovaRoute,
   AuthenticatedPecaIdRoute: AuthenticatedPecaIdRoute,
   AuthenticatedColecaoIndexRoute: AuthenticatedColecaoIndexRoute,
