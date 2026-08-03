@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { z } from "zod";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
 import { autenticidadeLabel, estadoLabel, raridadeLabel, slugify } from "@/lib/collection";
 import { Input } from "@/components/ui/input";
@@ -28,17 +29,78 @@ export interface PecaFormValues {
   publico: boolean;
 }
 
-function Campo({ id, rotulo, children }: { id: string; rotulo: string; children: React.ReactNode }) {
+function Campo({
+  id,
+  rotulo,
+  erro,
+  children,
+}: {
+  id: string;
+  rotulo: string;
+  erro?: string | undefined;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{rotulo}</Label>
       {children}
+      {erro ? (
+        <p role="alert" className="text-xs text-destructive">
+          {erro}
+        </p>
+      ) : null}
     </div>
   );
 }
 
+const texto = (max: number, rotulo: string) =>
+  z
+    .string()
+    .trim()
+    .max(max, { message: `${rotulo}: máximo ${max} caracteres.` })
+    .nullable()
+    .optional();
+
+const pecaSchema = z.object({
+  titulo: z
+    .string()
+    .trim()
+    .min(1, { message: "O título é obrigatório." })
+    .max(200, { message: "O título deve ter menos de 200 caracteres." }),
+  slug: z
+    .string()
+    .trim()
+    .max(200, { message: "O slug deve ter menos de 200 caracteres." })
+    .regex(/^[a-z0-9-]*$/, { message: "O slug só aceita letras minúsculas, números e hífenes." }),
+  inventario: texto(60, "Nº de inventário"),
+  autor: texto(160, "Autoria"),
+  periodo: texto(120, "Período"),
+  materiais: texto(240, "Materiais"),
+  tecnica: texto(240, "Técnica"),
+  dimensoes: texto(160, "Dimensões"),
+  localizacao: texto(160, "Localização"),
+  proveniencia: texto(2000, "Proveniência"),
+  descricao: texto(5000, "Descrição"),
+  notas_privadas: texto(5000, "Notas privadas"),
+  valor_estimado: z
+    .number({ message: "Valor estimado inválido." })
+    .min(0, { message: "O valor estimado não pode ser negativo." })
+    .max(1_000_000_000, { message: "Valor estimado demasiado elevado." })
+    .nullable(),
+  data_aquisicao: z
+    .string()
+    .trim()
+    .refine((d) => !d || !Number.isNaN(Date.parse(d)), { message: "Data de aquisição inválida." })
+    .refine((d) => !d || Date.parse(d) <= Date.now(), {
+      message: "A data de aquisição não pode ser futura.",
+    })
+    .nullable()
+    .optional(),
+});
+
 const selectCls =
   "h-9 w-full border border-input bg-background px-3 text-sm outline-none focus-visible:border-accent";
+
 
 export function PecaForm({
   peca,
@@ -77,22 +139,40 @@ export function PecaForm({
     publico: peca?.publico ?? false,
   });
 
+  const [erros, setErros] = useState<Partial<Record<keyof PecaFormValues, string>>>({});
+
   function set<K extends keyof PecaFormValues>(k: K, value: PecaFormValues[K]) {
     setV((prev) => ({ ...prev, [k]: value }));
+    setErros((prev) => (prev[k] ? { ...prev, [k]: undefined } : prev));
+  }
+
+  function submeter(e: React.FormEvent) {
+    e.preventDefault();
+    if (soLeitura) return;
+    const slug = (v.slug.trim() || slugify(v.titulo)).trim();
+    const candidato = { ...v, slug };
+    const r = pecaSchema.safeParse(candidato);
+    if (!r.success) {
+      const novos: Partial<Record<keyof PecaFormValues, string>> = {};
+      for (const issue of r.error.issues) {
+        const chave = issue.path[0] as keyof PecaFormValues;
+        if (chave && !novos[chave]) novos[chave] = issue.message;
+      }
+      setErros(novos);
+      const primeiro = document.getElementById(String(Object.keys(novos)[0]));
+      primeiro?.focus();
+      return;
+    }
+    setErros({});
+    onSubmit({ ...candidato, slug: slug || crypto.randomUUID() });
   }
 
   return (
-    <form
-      className="plate space-y-8 p-6"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (soLeitura) return;
-        onSubmit({ ...v, slug: v.slug.trim() || slugify(v.titulo) || crypto.randomUUID() });
-      }}
-    >
+    <form className="plate space-y-8 p-6" onSubmit={submeter} noValidate>
       <fieldset disabled={soLeitura} className="space-y-8 disabled:opacity-90">
+
       <div className="grid gap-5 md:grid-cols-2">
-        <Campo id="titulo" rotulo="Título *">
+        <Campo id="titulo" rotulo="Título *" erro={erros.titulo}>
           <Input
             id="titulo"
             required
@@ -100,17 +180,17 @@ export function PecaForm({
             onChange={(e) => set("titulo", e.target.value)}
           />
         </Campo>
-        <Campo id="inventario" rotulo="Nº de inventário">
+        <Campo id="inventario" rotulo="Nº de inventário" erro={erros.inventario}>
           <Input
             id="inventario"
             value={v.inventario ?? ""}
             onChange={(e) => set("inventario", e.target.value)}
           />
         </Campo>
-        <Campo id="autor" rotulo="Autoria">
+        <Campo id="autor" rotulo="Autoria" erro={erros.autor}>
           <Input id="autor" value={v.autor ?? ""} onChange={(e) => set("autor", e.target.value)} />
         </Campo>
-        <Campo id="periodo" rotulo="Período / datação">
+        <Campo id="periodo" rotulo="Período / datação" erro={erros.periodo}>
           <Input
             id="periodo"
             value={v.periodo ?? ""}
@@ -132,35 +212,35 @@ export function PecaForm({
             ))}
           </select>
         </Campo>
-        <Campo id="localizacao" rotulo="Localização">
+        <Campo id="localizacao" rotulo="Localização" erro={erros.localizacao}>
           <Input
             id="localizacao"
             value={v.localizacao ?? ""}
             onChange={(e) => set("localizacao", e.target.value)}
           />
         </Campo>
-        <Campo id="materiais" rotulo="Materiais">
+        <Campo id="materiais" rotulo="Materiais" erro={erros.materiais}>
           <Input
             id="materiais"
             value={v.materiais ?? ""}
             onChange={(e) => set("materiais", e.target.value)}
           />
         </Campo>
-        <Campo id="tecnica" rotulo="Técnica">
+        <Campo id="tecnica" rotulo="Técnica" erro={erros.tecnica}>
           <Input
             id="tecnica"
             value={v.tecnica ?? ""}
             onChange={(e) => set("tecnica", e.target.value)}
           />
         </Campo>
-        <Campo id="dimensoes" rotulo="Dimensões">
+        <Campo id="dimensoes" rotulo="Dimensões" erro={erros.dimensoes}>
           <Input
             id="dimensoes"
             value={v.dimensoes ?? ""}
             onChange={(e) => set("dimensoes", e.target.value)}
           />
         </Campo>
-        <Campo id="valor" rotulo="Valor estimado (EUR)">
+        <Campo id="valor" rotulo="Valor estimado (EUR)" erro={erros.valor_estimado}>
           <Input
             id="valor"
             type="number"
@@ -211,7 +291,7 @@ export function PecaForm({
             ))}
           </select>
         </Campo>
-        <Campo id="aquisicao" rotulo="Data de aquisição">
+        <Campo id="aquisicao" rotulo="Data de aquisição" erro={erros.data_aquisicao}>
           <Input
             id="aquisicao"
             type="date"
@@ -221,7 +301,7 @@ export function PecaForm({
         </Campo>
       </div>
 
-      <Campo id="proveniencia" rotulo="Proveniência">
+      <Campo id="proveniencia" rotulo="Proveniência" erro={erros.proveniencia}>
         <Textarea
           id="proveniencia"
           rows={3}
@@ -229,7 +309,7 @@ export function PecaForm({
           onChange={(e) => set("proveniencia", e.target.value)}
         />
       </Campo>
-      <Campo id="descricao" rotulo="Descrição">
+      <Campo id="descricao" rotulo="Descrição" erro={erros.descricao}>
         <Textarea
           id="descricao"
           rows={4}
@@ -237,7 +317,7 @@ export function PecaForm({
           onChange={(e) => set("descricao", e.target.value)}
         />
       </Campo>
-      <Campo id="notas" rotulo="Notas privadas (nunca públicas)">
+      <Campo id="notas" rotulo="Notas privadas (nunca públicas)" erro={erros.notas_privadas}>
         <Textarea
           id="notas"
           rows={3}
