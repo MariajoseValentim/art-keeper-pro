@@ -57,10 +57,25 @@ export function ImportarExportar({
   const importar = async (ficheiro: File) => {
     setAImportar(true);
     try {
-      const texto = await ficheiro.text();
-      const registos = ficheiro.name.toLowerCase().endsWith(".json")
-        ? (JSON.parse(texto) as Record<string, string>[])
-        : lerCSV(texto);
+      const ext = extensao(ficheiro.name);
+      let registos: Record<string, string>[];
+
+      if (ext === "json") {
+        registos = JSON.parse(await ficheiro.text()) as Record<string, string>[];
+      } else if (ext === "csv") {
+        registos = lerCSV(await ficheiro.text());
+      } else if (EXTENSOES_TEXTO.includes(ext)) {
+        const texto = await extrairTexto(ficheiro);
+        registos = textoParaRegistos(texto);
+        if (!registos.length) {
+          throw new Error(
+            "Não foi possível reconhecer peças no documento. Use linhas no formato «Título: valor».",
+          );
+        }
+      } else {
+        throw new Error(`Formato .${ext} não suportado.`);
+      }
+
 
       const { data: sessao } = await supabase.auth.getUser();
       const userId = sessao.user?.id;
