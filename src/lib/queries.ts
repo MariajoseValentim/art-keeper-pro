@@ -68,6 +68,43 @@ export const midiaQuery = (pecaId: string) =>
     },
   });
 
+export type Capa = { pecaId: string; url: string; video: boolean };
+
+export const isVideoPath = (path: string) => /\.(mp4|webm|mov|m4v|ogv|avi|mkv)$/i.test(path);
+
+/** Miniatura de identificação (imagem principal, ou o primeiro ficheiro) de cada peça. */
+export const capasQuery = () =>
+  queryOptions({
+    queryKey: ["capas"],
+    queryFn: async (): Promise<Record<string, Capa>> => {
+      const { data, error } = await supabase
+        .from("fotografias")
+        .select("peca_id, storage_path, principal, ordem")
+        .order("principal", { ascending: false })
+        .order("ordem", { ascending: true })
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      const linhas = data ?? [];
+      const escolhidas = new Map<string, string>();
+      for (const l of linhas) {
+        if (!escolhidas.has(l.peca_id)) escolhidas.set(l.peca_id, l.storage_path);
+      }
+      if (escolhidas.size === 0) return {};
+      const caminhos = [...escolhidas.values()];
+      const { data: assinados } = await supabase.storage
+        .from("fotografias")
+        .createSignedUrls(caminhos, 60 * 60);
+      const urls = new Map((assinados ?? []).map((s) => [s.path ?? "", s.signedUrl]));
+      const capas: Record<string, Capa> = {};
+      for (const [pecaId, path] of escolhidas) {
+        const url = urls.get(path);
+        if (url) capas[pecaId] = { pecaId, url, video: isVideoPath(path) };
+      }
+      return capas;
+    },
+  });
+
+
 export const auditoriaQuery = () =>
   queryOptions({
     queryKey: ["auditoria"],
