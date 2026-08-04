@@ -200,15 +200,12 @@ export function FichaMuseologica({
               <p className="text-sm whitespace-pre-line text-foreground">{peca.ficha_tecnica}</p>
             ) : null}
             {peca.ficha_tecnica_path ? (
-              <button
-                type="button"
-                onClick={() => void abrirFichaTecnica(peca.ficha_tecnica_path!)}
-                className="mt-4 inline-flex items-center gap-2 text-sm text-accent hover:underline"
-              >
-                <FileText className="size-4" aria-hidden />
-                {peca.ficha_tecnica_nome ?? "Documento da ficha técnica"}
-              </button>
+              <PreviewFichaTecnica
+                path={peca.ficha_tecnica_path}
+                nome={peca.ficha_tecnica_nome}
+              />
             ) : null}
+
           </section>
         ) : null}
         <header className="plate-gilt p-5 sm:p-6">
