@@ -212,6 +212,7 @@ const pecaSchema = z.object({
     .max(200, { message: "O slug deve ter menos de 200 caracteres." })
     .regex(/^[a-z0-9-]*$/, { message: "O slug só aceita letras minúsculas, números e hífenes." }),
   inventario: texto(60, "Nº de inventário"),
+  ficha_tecnica: texto(20000, "Ficha técnica"),
   autor: texto(160, "Autoria"),
   periodo: texto(120, "Período"),
   materiais: texto(240, "Materiais"),
