@@ -15,6 +15,58 @@ async function abrirFichaTecnica(path: string) {
   window.open(data.signedUrl, "_blank", "noopener");
 }
 
+const fichaTecnicaUrlQuery = (path: string) => ({
+  queryKey: ["ficha-tecnica-url", path],
+  queryFn: async (): Promise<string | null> => {
+    const { data, error } = await supabase.storage
+      .from("documentos")
+      .createSignedUrl(path, 60 * 60);
+    if (error) throw error;
+    return data?.signedUrl ?? null;
+  },
+  staleTime: 50 * 60 * 1000,
+});
+
+function PreviewFichaTecnica({ path, nome }: { path: string; nome: string | null }) {
+  const { data: url, isLoading } = useQuery(fichaTecnicaUrlQuery(path));
+  const pdf = /\.pdf$/i.test(path);
+  const rotulo = nome ?? "Documento da ficha técnica";
+
+  return (
+    <div className="mt-4 space-y-3">
+      {pdf ? (
+        isLoading ? (
+          <div className="frame-art flex h-[26rem] items-center justify-center rounded-lg">
+            <span className="label-caps">A carregar documento…</span>
+          </div>
+        ) : url ? (
+          <iframe
+            src={`${url}#toolbar=0&view=FitH`}
+            title={rotulo}
+            className="frame-art h-[26rem] w-full rounded-lg bg-background"
+          />
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Não foi possível pré-visualizar o documento.
+          </p>
+        )
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Pré-visualização indisponível para documentos Word — abra o ficheiro para consultar.
+        </p>
+      )}
+      <button
+        type="button"
+        onClick={() => void abrirFichaTecnica(path)}
+        className="inline-flex items-center gap-2 text-sm text-accent hover:underline"
+      >
+        <FileText className="size-4" aria-hidden />
+        {rotulo}
+      </button>
+    </div>
+  );
+}
+
 function Campo({ rotulo, valor }: { rotulo: string; valor?: string | null }) {
   if (!valor) return null;
   return (
