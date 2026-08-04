@@ -335,6 +335,9 @@ export type Database = {
           dimensoes: string | null
           escola: string | null
           estado: string
+          ficha_tecnica: string | null
+          ficha_tecnica_nome: string | null
+          ficha_tecnica_path: string | null
           historico: string | null
           id: string
           inventario: string | null
@@ -372,6 +375,9 @@ export type Database = {
           dimensoes?: string | null
           escola?: string | null
           estado?: string
+          ficha_tecnica?: string | null
+          ficha_tecnica_nome?: string | null
+          ficha_tecnica_path?: string | null
           historico?: string | null
           id?: string
           inventario?: string | null
@@ -409,6 +415,9 @@ export type Database = {
           dimensoes?: string | null
           escola?: string | null
           estado?: string
+          ficha_tecnica?: string | null
+          ficha_tecnica_nome?: string | null
+          ficha_tecnica_path?: string | null
           historico?: string | null
           id?: string
           inventario?: string | null

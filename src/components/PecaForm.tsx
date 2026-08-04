@@ -1,13 +1,152 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { z } from "zod";
+import { toast } from "sonner";
+import { FileText, Loader2, Upload, X } from "lucide-react";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
 import { autenticidadeLabel, estadoLabel, raridadeLabel, slugify } from "@/lib/collection";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
+const TIPOS_FICHA =
+  ".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+function FichaTecnicaCampo({
+  texto,
+  path,
+  nome,
+  soLeitura,
+  erro,
+  onTexto,
+  onFicheiro,
+}: {
+  texto: string;
+  path: string | null;
+  nome: string | null;
+  soLeitura: boolean;
+  erro?: string | undefined;
+  onTexto: (t: string) => void;
+  onFicheiro: (path: string | null, nome: string | null) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [aEnviar, setAEnviar] = useState(false);
+
+  async function enviar(file: File) {
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("Ficheiro demasiado grande (máx. 50 MB).");
+      return;
+    }
+    setAEnviar(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) throw new Error("Sessão expirada.");
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "pdf";
+      const destino = `${uid}/fichas-tecnicas/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("documentos").upload(destino, file);
+      if (error) throw error;
+      onFicheiro(destino, file.name);
+      toast.success("Ficha técnica carregada.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível carregar o ficheiro.");
+    } finally {
+      setAEnviar(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  async function abrir() {
+    if (!path) return;
+    const { data, error } = await supabase.storage.from("documentos").createSignedUrl(path, 600);
+    if (error || !data?.signedUrl) {
+      toast.error("Não foi possível abrir o ficheiro.");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener");
+  }
+
+  return (
+    <section className="space-y-3 border border-border p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Label htmlFor="ficha_tecnica" className="label-caps">
+          Ficha técnica
+        </Label>
+        {!soLeitura ? (
+          <div className="flex items-center gap-2">
+            <input
+              ref={inputRef}
+              id="ficha_tecnica_ficheiro"
+              type="file"
+              accept={TIPOS_FICHA}
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void enviar(f);
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={aEnviar}
+              onClick={() => inputRef.current?.click()}
+            >
+              {aEnviar ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Upload className="size-4" aria-hidden />
+              )}
+              Carregar PDF / Word
+            </Button>
+          </div>
+        ) : null}
+      </div>
+
+      <Textarea
+        id="ficha_tecnica"
+        rows={4}
+        placeholder="Escreva aqui a ficha técnica da peça…"
+        value={texto}
+        onChange={(e) => onTexto(e.target.value)}
+      />
+      {erro ? (
+        <p role="alert" className="text-xs text-destructive">
+          {erro}
+        </p>
+      ) : null}
+
+      {path ? (
+        <div className="flex items-center gap-3 text-sm">
+          <button
+            type="button"
+            onClick={() => void abrir()}
+            className="inline-flex items-center gap-2 text-accent hover:underline"
+          >
+            <FileText className="size-4" aria-hidden />
+            {nome ?? "Documento da ficha técnica"}
+          </button>
+          {!soLeitura ? (
+            <button
+              type="button"
+              aria-label="Remover documento"
+              onClick={() => onFicheiro(null, null)}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <X className="size-4" aria-hidden />
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 export interface PecaFormValues {
+  ficha_tecnica: string | null;
+  ficha_tecnica_path: string | null;
+  ficha_tecnica_nome: string | null;
   titulo: string;
   slug: string;
   inventario: string | null;
@@ -73,6 +212,7 @@ const pecaSchema = z.object({
     .max(200, { message: "O slug deve ter menos de 200 caracteres." })
     .regex(/^[a-z0-9-]*$/, { message: "O slug só aceita letras minúsculas, números e hífenes." }),
   inventario: texto(60, "Nº de inventário"),
+  ficha_tecnica: texto(20000, "Ficha técnica"),
   autor: texto(160, "Autoria"),
   periodo: texto(120, "Período"),
   materiais: texto(240, "Materiais"),
@@ -118,6 +258,9 @@ export function PecaForm({
   soLeitura?: boolean;
 }) {
   const [v, setV] = useState<PecaFormValues>({
+    ficha_tecnica: peca?.ficha_tecnica ?? "",
+    ficha_tecnica_path: peca?.ficha_tecnica_path ?? null,
+    ficha_tecnica_nome: peca?.ficha_tecnica_nome ?? null,
     titulo: peca?.titulo ?? "",
     slug: peca?.slug ?? "",
     inventario: peca?.inventario ?? "",
@@ -170,6 +313,19 @@ export function PecaForm({
   return (
     <form className="plate space-y-8 p-6" onSubmit={submeter} noValidate>
       <fieldset disabled={soLeitura} className="space-y-8 disabled:opacity-90">
+
+      <FichaTecnicaCampo
+        texto={v.ficha_tecnica ?? ""}
+        path={v.ficha_tecnica_path}
+        nome={v.ficha_tecnica_nome}
+        soLeitura={soLeitura}
+        erro={erros.ficha_tecnica}
+        onTexto={(t) => set("ficha_tecnica", t)}
+        onFicheiro={(path, nome) => {
+          set("ficha_tecnica_path", path);
+          set("ficha_tecnica_nome", nome);
+        }}
+      />
 
       <div className="grid gap-5 md:grid-cols-2">
         <Campo id="titulo" rotulo="Título *" erro={erros.titulo}>

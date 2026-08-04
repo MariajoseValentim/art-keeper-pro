@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Play } from "lucide-react";
+import { FileText, Play } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { midiaQuery, isVideoPath, type MidiaItem } from "@/lib/queries";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
+
+async function abrirFichaTecnica(path: string) {
+  const { data, error } = await supabase.storage.from("documentos").createSignedUrl(path, 600);
+  if (error || !data?.signedUrl) {
+    toast.error("Não foi possível abrir o documento.");
+    return;
+  }
+  window.open(data.signedUrl, "_blank", "noopener");
+}
 
 function Campo({ rotulo, valor }: { rotulo: string; valor?: string | null }) {
   if (!valor) return null;
@@ -181,7 +192,27 @@ export function FichaMuseologica({
 
       {/* Ficha */}
       <div className="grid gap-6">
+        {peca.ficha_tecnica || peca.ficha_tecnica_path ? (
+          <section className="plate p-5 sm:p-6">
+            <h2 className="text-xl">Ficha técnica</h2>
+            <hr className="gilt-rule my-4" />
+            {peca.ficha_tecnica ? (
+              <p className="text-sm whitespace-pre-line text-foreground">{peca.ficha_tecnica}</p>
+            ) : null}
+            {peca.ficha_tecnica_path ? (
+              <button
+                type="button"
+                onClick={() => void abrirFichaTecnica(peca.ficha_tecnica_path!)}
+                className="mt-4 inline-flex items-center gap-2 text-sm text-accent hover:underline"
+              >
+                <FileText className="size-4" aria-hidden />
+                {peca.ficha_tecnica_nome ?? "Documento da ficha técnica"}
+              </button>
+            ) : null}
+          </section>
+        ) : null}
         <header className="plate-gilt p-5 sm:p-6">
+
           <p className="label-caps">{peca.inventario ?? "Sem número de inventário"}</p>
           <h2 className="mt-2 text-3xl leading-tight sm:text-4xl">{peca.titulo}</h2>
           {peca.autor ? (
