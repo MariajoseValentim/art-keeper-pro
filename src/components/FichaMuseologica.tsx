@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Play } from "lucide-react";
+import { FileText, Play } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { midiaQuery, isVideoPath, type MidiaItem } from "@/lib/queries";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
+
+async function abrirFichaTecnica(path: string) {
+  const { data, error } = await supabase.storage.from("documentos").createSignedUrl(path, 600);
+  if (error || !data?.signedUrl) {
+    toast.error("Não foi possível abrir o documento.");
+    return;
+  }
+  window.open(data.signedUrl, "_blank", "noopener");
+}
 
 function Campo({ rotulo, valor }: { rotulo: string; valor?: string | null }) {
   if (!valor) return null;
