@@ -177,6 +177,19 @@ export function PecaForm({
     <form className="plate space-y-8 p-6" onSubmit={submeter} noValidate>
       <fieldset disabled={soLeitura} className="space-y-8 disabled:opacity-90">
 
+      <FichaTecnicaCampo
+        texto={v.ficha_tecnica ?? ""}
+        path={v.ficha_tecnica_path}
+        nome={v.ficha_tecnica_nome}
+        soLeitura={soLeitura}
+        erro={erros.ficha_tecnica}
+        onTexto={(t) => set("ficha_tecnica", t)}
+        onFicheiro={(path, nome) => {
+          set("ficha_tecnica_path", path);
+          set("ficha_tecnica_nome", nome);
+        }}
+      />
+
       <div className="grid gap-5 md:grid-cols-2">
         <Campo id="titulo" rotulo="Título *" erro={erros.titulo}>
           <Input
