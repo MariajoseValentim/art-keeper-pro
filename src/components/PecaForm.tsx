@@ -8,6 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 export interface PecaFormValues {
+  ficha_tecnica: string | null;
+  ficha_tecnica_path: string | null;
+  ficha_tecnica_nome: string | null;
   titulo: string;
   slug: string;
   inventario: string | null;
