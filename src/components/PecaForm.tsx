@@ -121,6 +121,9 @@ export function PecaForm({
   soLeitura?: boolean;
 }) {
   const [v, setV] = useState<PecaFormValues>({
+    ficha_tecnica: peca?.ficha_tecnica ?? "",
+    ficha_tecnica_path: peca?.ficha_tecnica_path ?? null,
+    ficha_tecnica_nome: peca?.ficha_tecnica_nome ?? null,
     titulo: peca?.titulo ?? "",
     slug: peca?.slug ?? "",
     inventario: peca?.inventario ?? "",
