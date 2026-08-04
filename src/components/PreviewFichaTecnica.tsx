@@ -60,6 +60,21 @@ export function PreviewFichaTecnica({ path, nome }: { path: string; nome: string
   const { data, isLoading } = useQuery(previewQuery(path, pdf));
   const rotulo = nome ?? "Documento da ficha técnica";
   const paginas = data?.paginas ?? [];
+  const total = paginas.length;
+  const [atual, setAtual] = useState(1);
+  const [salto, setSalto] = useState("");
+  const refs = useRef<Record<number, HTMLLIElement | null>>({});
+
+  useEffect(() => {
+    if (total && atual > total) setAtual(1);
+  }, [total, atual]);
+
+  function irPara(n: number) {
+    if (!total) return;
+    const destino = Math.min(Math.max(n, 1), total);
+    setAtual(destino);
+    refs.current[destino]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
 
   return (
     <div className="mt-4 space-y-3">
@@ -70,30 +85,98 @@ export function PreviewFichaTecnica({ path, nome }: { path: string; nome: string
         </div>
       ) : null}
 
-      {paginas.length ? (
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {paginas.map((src, i) => (
-            <li key={src.slice(-24) + i}>
+      {total ? (
+        <>
+          <div className="flex flex-wrap items-center gap-3 border border-border px-3 py-2">
+            <button
+              type="button"
+              onClick={() => irPara(atual - 1)}
+              disabled={atual <= 1}
+              aria-label="Página anterior"
+              className="inline-flex size-8 items-center justify-center border border-border text-foreground transition-colors hover:border-accent hover:text-accent disabled:opacity-40"
+            >
+              <ChevronLeft className="size-4" aria-hidden />
+            </button>
+            <span aria-live="polite" className="label-caps">
+              Página {atual} de {total}
+            </span>
+            <button
+              type="button"
+              onClick={() => irPara(atual + 1)}
+              disabled={atual >= total}
+              aria-label="Página seguinte"
+              className="inline-flex size-8 items-center justify-center border border-border text-foreground transition-colors hover:border-accent hover:text-accent disabled:opacity-40"
+            >
+              <ChevronRight className="size-4" aria-hidden />
+            </button>
+            <form
+              className="ml-auto flex items-center gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const n = Number(salto);
+                if (Number.isFinite(n) && n >= 1) irPara(Math.trunc(n));
+                setSalto("");
+              }}
+            >
+              <label htmlFor="salto-pagina" className="label-caps">
+                Ir para
+              </label>
+              <input
+                id="salto-pagina"
+                type="number"
+                min={1}
+                max={total}
+                value={salto}
+                onChange={(e) => setSalto(e.target.value)}
+                placeholder={String(atual)}
+                className="w-16 border border-border bg-transparent px-2 py-1 text-sm text-foreground"
+              />
               <button
-                type="button"
-                onClick={() => void abrirDocumento(path)}
-                aria-label={`Abrir documento na página ${i + 1}`}
-                className="frame-art block w-full overflow-hidden rounded-sm transition-opacity duration-200 hover:opacity-100 focus:opacity-100 opacity-90"
+                type="submit"
+                className="border border-border px-3 py-1 text-sm text-foreground transition-colors hover:border-accent hover:text-accent"
               >
-                <img
-                  src={src}
-                  alt={`Página ${i + 1} da ficha técnica`}
-                  loading="lazy"
-                  className="w-full bg-background object-contain"
-                />
-                <span className="block border-t border-border py-1 text-center text-[0.65rem] tracking-wide text-muted-foreground uppercase">
-                  Página {i + 1}
-                </span>
+                Saltar
               </button>
-            </li>
-          ))}
-        </ul>
+            </form>
+          </div>
+
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {paginas.map((src, i) => {
+              const n = i + 1;
+              return (
+                <li
+                  key={src.slice(-24) + i}
+                  ref={(el) => {
+                    refs.current[n] = el;
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => (n === atual ? void abrirDocumento(path) : irPara(n))}
+                    onDoubleClick={() => void abrirDocumento(path)}
+                    aria-label={`Página ${n}`}
+                    aria-current={n === atual}
+                    className={`frame-art block w-full overflow-hidden rounded-sm transition-all duration-200 hover:opacity-100 ${
+                      n === atual ? "border-accent opacity-100" : "opacity-70"
+                    }`}
+                  >
+                    <img
+                      src={src}
+                      alt={`Página ${n} da ficha técnica`}
+                      loading="lazy"
+                      className="w-full bg-background object-contain"
+                    />
+                    <span className="block border-t border-border py-1 text-center text-[0.65rem] tracking-wide text-muted-foreground uppercase">
+                      Página {n}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       ) : null}
+
 
       {!isLoading && !paginas.length ? (
         <p className="text-sm text-muted-foreground">
