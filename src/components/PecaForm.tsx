@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { FileText, Loader2, Upload, X } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, Loader2, Upload, X } from "lucide-react";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
+import { lerFichaFicheiros, type FichaFicheiro } from "@/lib/ficha";
 import { autenticidadeLabel, estadoLabel, raridadeLabel, slugify } from "@/lib/collection";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
