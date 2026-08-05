@@ -4,13 +4,20 @@ import { ChevronLeft, ChevronRight, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-export async function abrirDocumento(path: string) {
+export async function abrirDocumento(path: string, pagina?: number) {
   const { data, error } = await supabase.storage.from("documentos").createSignedUrl(path, 600);
   if (error || !data?.signedUrl) {
     toast.error("Não foi possível abrir o documento.");
     return;
   }
-  window.open(data.signedUrl, "_blank", "noopener");
+  const pdf = /\.pdf$/i.test(path);
+  const alvo =
+    pdf && pagina && pagina > 1
+      ? `${data.signedUrl}#page=${pagina}&view=FitH`
+      : pdf
+        ? `${data.signedUrl}#view=FitH`
+        : data.signedUrl;
+  window.open(alvo, "_blank", "noopener");
 }
 
 async function miniaturasPdf(url: string): Promise<string[]> {
