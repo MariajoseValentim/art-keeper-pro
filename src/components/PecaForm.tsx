@@ -357,16 +357,20 @@ export function PecaForm({
 
       <FichaTecnicaCampo
         texto={v.ficha_tecnica ?? ""}
-        path={v.ficha_tecnica_path}
-        nome={v.ficha_tecnica_nome}
+        ficheiros={v.ficha_tecnica_ficheiros}
         soLeitura={soLeitura}
         erro={erros.ficha_tecnica}
         onTexto={(t) => set("ficha_tecnica", t)}
-        onFicheiro={(path, nome) => {
-          set("ficha_tecnica_path", path);
-          set("ficha_tecnica_nome", nome);
+        onFicheiros={(lista) => {
+          setV((prev) => ({
+            ...prev,
+            ficha_tecnica_ficheiros: lista,
+            ficha_tecnica_path: lista[0]?.path ?? null,
+            ficha_tecnica_nome: lista[0]?.nome ?? null,
+          }));
         }}
       />
+
 
       <div className="grid gap-5 md:grid-cols-2">
         <Campo id="titulo" rotulo="Título *" erro={erros.titulo}>
