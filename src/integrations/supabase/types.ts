@@ -336,6 +336,7 @@ export type Database = {
           escola: string | null
           estado: string
           ficha_tecnica: string | null
+          ficha_tecnica_ficheiros: Json
           ficha_tecnica_nome: string | null
           ficha_tecnica_path: string | null
           historico: string | null
@@ -376,6 +377,7 @@ export type Database = {
           escola?: string | null
           estado?: string
           ficha_tecnica?: string | null
+          ficha_tecnica_ficheiros?: Json
           ficha_tecnica_nome?: string | null
           ficha_tecnica_path?: string | null
           historico?: string | null
@@ -416,6 +418,7 @@ export type Database = {
           escola?: string | null
           estado?: string
           ficha_tecnica?: string | null
+          ficha_tecnica_ficheiros?: Json
           ficha_tecnica_nome?: string | null
           ficha_tecnica_path?: string | null
           historico?: string | null
