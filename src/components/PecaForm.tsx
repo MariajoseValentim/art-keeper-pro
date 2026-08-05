@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { FileText, Loader2, Upload, X } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, Loader2, Upload, X } from "lucide-react";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
+import { lerFichaFicheiros, type FichaFicheiro } from "@/lib/ficha";
 import { autenticidadeLabel, estadoLabel, raridadeLabel, slugify } from "@/lib/collection";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -15,40 +16,46 @@ const TIPOS_FICHA =
 
 function FichaTecnicaCampo({
   texto,
-  path,
-  nome,
+  ficheiros,
   soLeitura,
   erro,
   onTexto,
-  onFicheiro,
+  onFicheiros,
 }: {
   texto: string;
-  path: string | null;
-  nome: string | null;
+  ficheiros: FichaFicheiro[];
   soLeitura: boolean;
   erro?: string | undefined;
   onTexto: (t: string) => void;
-  onFicheiro: (path: string | null, nome: string | null) => void;
+  onFicheiros: (lista: FichaFicheiro[]) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [aEnviar, setAEnviar] = useState(false);
 
-  async function enviar(file: File) {
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error("Ficheiro demasiado grande (máx. 50 MB).");
-      return;
-    }
+  async function enviar(files: File[]) {
     setAEnviar(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
       if (!uid) throw new Error("Sessão expirada.");
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "pdf";
-      const destino = `${uid}/fichas-tecnicas/${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage.from("documentos").upload(destino, file);
-      if (error) throw error;
-      onFicheiro(destino, file.name);
-      toast.success("Ficha técnica carregada.");
+      const novos: FichaFicheiro[] = [];
+      for (const file of files) {
+        if (file.size > 50 * 1024 * 1024) {
+          toast.error(`"${file.name}" excede 50 MB.`);
+          continue;
+        }
+        const ext = file.name.split(".").pop()?.toLowerCase() ?? "pdf";
+        const destino = `${uid}/fichas-tecnicas/${crypto.randomUUID()}.${ext}`;
+        const { error } = await supabase.storage.from("documentos").upload(destino, file);
+        if (error) throw error;
+        novos.push({ path: destino, nome: file.name });
+      }
+      if (novos.length) {
+        onFicheiros([...ficheiros, ...novos]);
+        toast.success(
+          novos.length === 1 ? "Ficheiro carregado." : `${novos.length} ficheiros carregados.`,
+        );
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Não foi possível carregar o ficheiro.");
     } finally {
@@ -57,14 +64,22 @@ function FichaTecnicaCampo({
     }
   }
 
-  async function abrir() {
-    if (!path) return;
+  async function abrir(path: string) {
     const { data, error } = await supabase.storage.from("documentos").createSignedUrl(path, 600);
     if (error || !data?.signedUrl) {
       toast.error("Não foi possível abrir o ficheiro.");
       return;
     }
     window.open(data.signedUrl, "_blank", "noopener");
+  }
+
+  function mover(indice: number, delta: number) {
+    const destino = indice + delta;
+    if (destino < 0 || destino >= ficheiros.length) return;
+    const copia = [...ficheiros];
+    const [item] = copia.splice(indice, 1);
+    if (item) copia.splice(destino, 0, item);
+    onFicheiros(copia);
   }
 
   return (
@@ -79,11 +94,12 @@ function FichaTecnicaCampo({
               ref={inputRef}
               id="ficha_tecnica_ficheiro"
               type="file"
+              multiple
               accept={TIPOS_FICHA}
               className="hidden"
               onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void enviar(f);
+                const fs = Array.from(e.target.files ?? []);
+                if (fs.length) void enviar(fs);
               }}
             />
             <Button
@@ -117,27 +133,52 @@ function FichaTecnicaCampo({
         </p>
       ) : null}
 
-      {path ? (
-        <div className="flex items-center gap-3 text-sm">
-          <button
-            type="button"
-            onClick={() => void abrir()}
-            className="inline-flex items-center gap-2 text-accent hover:underline"
-          >
-            <FileText className="size-4" aria-hidden />
-            {nome ?? "Documento da ficha técnica"}
-          </button>
-          {!soLeitura ? (
-            <button
-              type="button"
-              aria-label="Remover documento"
-              onClick={() => onFicheiro(null, null)}
-              className="text-muted-foreground hover:text-destructive"
-            >
-              <X className="size-4" aria-hidden />
-            </button>
-          ) : null}
-        </div>
+      {ficheiros.length ? (
+        <ul className="space-y-2">
+          {ficheiros.map((f, i) => (
+            <li key={f.path} className="flex items-center gap-2 text-sm">
+              <span className="w-5 text-xs text-muted-foreground tabular-nums">{i + 1}.</span>
+              <button
+                type="button"
+                onClick={() => void abrir(f.path)}
+                className="inline-flex flex-1 items-center gap-2 text-left text-accent hover:underline"
+              >
+                <FileText className="size-4 shrink-0" aria-hidden />
+                {f.nome}
+              </button>
+              {!soLeitura ? (
+                <span className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Mover para cima"
+                    onClick={() => mover(i, -1)}
+                    disabled={i === 0}
+                    className="text-muted-foreground hover:text-accent disabled:opacity-30"
+                  >
+                    <ChevronUp className="size-4" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Mover para baixo"
+                    onClick={() => mover(i, 1)}
+                    disabled={i === ficheiros.length - 1}
+                    className="text-muted-foreground hover:text-accent disabled:opacity-30"
+                  >
+                    <ChevronDown className="size-4" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Remover ${f.nome}`}
+                    onClick={() => onFicheiros(ficheiros.filter((_, idx) => idx !== i))}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <X className="size-4" aria-hidden />
+                  </button>
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
       ) : null}
     </section>
   );
@@ -147,6 +188,7 @@ export interface PecaFormValues {
   ficha_tecnica: string | null;
   ficha_tecnica_path: string | null;
   ficha_tecnica_nome: string | null;
+  ficha_tecnica_ficheiros: FichaFicheiro[];
   titulo: string;
   slug: string;
   inventario: string | null;
@@ -261,6 +303,7 @@ export function PecaForm({
     ficha_tecnica: peca?.ficha_tecnica ?? "",
     ficha_tecnica_path: peca?.ficha_tecnica_path ?? null,
     ficha_tecnica_nome: peca?.ficha_tecnica_nome ?? null,
+    ficha_tecnica_ficheiros: peca ? lerFichaFicheiros(peca) : [],
     titulo: peca?.titulo ?? "",
     slug: peca?.slug ?? "",
     inventario: peca?.inventario ?? "",
@@ -316,16 +359,20 @@ export function PecaForm({
 
       <FichaTecnicaCampo
         texto={v.ficha_tecnica ?? ""}
-        path={v.ficha_tecnica_path}
-        nome={v.ficha_tecnica_nome}
+        ficheiros={v.ficha_tecnica_ficheiros}
         soLeitura={soLeitura}
         erro={erros.ficha_tecnica}
         onTexto={(t) => set("ficha_tecnica", t)}
-        onFicheiro={(path, nome) => {
-          set("ficha_tecnica_path", path);
-          set("ficha_tecnica_nome", nome);
+        onFicheiros={(lista) => {
+          setV((prev) => ({
+            ...prev,
+            ficha_tecnica_ficheiros: lista,
+            ficha_tecnica_path: lista[0]?.path ?? null,
+            ficha_tecnica_nome: lista[0]?.nome ?? null,
+          }));
         }}
       />
+
 
       <div className="grid gap-5 md:grid-cols-2">
         <Campo id="titulo" rotulo="Título *" erro={erros.titulo}>

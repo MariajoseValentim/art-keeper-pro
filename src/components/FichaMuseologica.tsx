@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 import { PreviewFichaTecnica } from "@/components/PreviewFichaTecnica";
 import { midiaQuery, isVideoPath, type MidiaItem } from "@/lib/queries";
 import type { CategoriaRow, PecaRow } from "@/lib/collection";
+import { lerFichaFicheiros } from "@/lib/ficha";
 
 function Campo({ rotulo, valor }: { rotulo: string; valor?: string | null }) {
   if (!valor) return null;
@@ -106,6 +107,7 @@ export function FichaMuseologica({
   peca: PecaRow;
   categorias?: CategoriaRow[];
 }) {
+  const fichaFicheiros = useMemo(() => lerFichaFicheiros(peca), [peca]);
   const { data: midia = [] } = useQuery(midiaQuery(peca.id));
   const [ativoId, setAtivoId] = useState<string | null>(null);
 
@@ -208,18 +210,22 @@ export function FichaMuseologica({
               ))}
           </div>
 
-          {peca.ficha_tecnica || peca.ficha_tecnica_path ? (
+          {peca.ficha_tecnica || fichaFicheiros.length ? (
             <>
               <hr className="gilt-rule my-5" />
               {peca.ficha_tecnica ? (
                 <p className="text-sm whitespace-pre-line text-foreground">{peca.ficha_tecnica}</p>
               ) : null}
-              {peca.ficha_tecnica_path ? (
-                <PreviewFichaTecnica
-                  path={peca.ficha_tecnica_path}
-                  nome={peca.ficha_tecnica_nome}
-                />
-              ) : null}
+              {fichaFicheiros.map((f, i) => (
+                <div key={f.path} className={i > 0 ? "mt-6" : undefined}>
+                  {fichaFicheiros.length > 1 ? (
+                    <p className="label-caps mb-2">
+                      Documento {i + 1} de {fichaFicheiros.length}
+                    </p>
+                  ) : null}
+                  <PreviewFichaTecnica path={f.path} nome={f.nome} />
+                </div>
+              ))}
             </>
           ) : null}
         </header>
