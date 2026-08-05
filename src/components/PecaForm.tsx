@@ -188,6 +188,7 @@ export interface PecaFormValues {
   ficha_tecnica: string | null;
   ficha_tecnica_path: string | null;
   ficha_tecnica_nome: string | null;
+  ficha_tecnica_ficheiros: FichaFicheiro[];
   titulo: string;
   slug: string;
   inventario: string | null;
