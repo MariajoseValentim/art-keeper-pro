@@ -227,13 +227,16 @@ export function PreviewFichaTecnica({ path, nome }: { path: string; nome: string
       ) : null}
 
 
-      {!isLoading && !paginas.length ? (
+      {!isLoading && !paginas.length && !html && !texto ? (
         <p className="text-sm text-muted-foreground">
           {pdf
             ? "Não foi possível gerar as miniaturas deste PDF — abra o ficheiro para consultar."
-            : "Pré-visualização por páginas disponível apenas em PDF — abra o ficheiro Word para consultar."}
+            : tipo === "word"
+              ? "Não foi possível pré-visualizar este documento Word (formatos .doc antigos não são suportados) — abra o ficheiro para consultar."
+              : "Pré-visualização não disponível para este formato — abra o ficheiro para consultar."}
         </p>
       ) : null}
+
 
       <button
         type="button"
