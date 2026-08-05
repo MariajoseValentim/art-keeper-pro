@@ -160,9 +160,12 @@ export function PreviewFichaTecnica({ path, nome }: { path: string; nome: string
                 >
                   <button
                     type="button"
-                    onClick={() => (n === atual ? void abrirDocumento(path) : irPara(n))}
-                    onDoubleClick={() => void abrirDocumento(path)}
-                    aria-label={`Página ${n}`}
+                    onClick={() => {
+                      setAtual(n);
+                      void abrirDocumento(path, n);
+                    }}
+                    aria-label={`Abrir documento na página ${n}`}
+                    title={pdf ? `Abrir na página ${n}` : "Abrir documento"}
                     aria-current={n === atual}
                     className={`frame-art block w-full overflow-hidden rounded-sm transition-all duration-200 hover:opacity-100 ${
                       n === atual ? "border-accent opacity-100" : "opacity-70"
