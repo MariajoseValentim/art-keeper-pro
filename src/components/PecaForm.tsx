@@ -303,6 +303,7 @@ export function PecaForm({
     ficha_tecnica: peca?.ficha_tecnica ?? "",
     ficha_tecnica_path: peca?.ficha_tecnica_path ?? null,
     ficha_tecnica_nome: peca?.ficha_tecnica_nome ?? null,
+    ficha_tecnica_ficheiros: peca ? lerFichaFicheiros(peca) : [],
     titulo: peca?.titulo ?? "",
     slug: peca?.slug ?? "",
     inventario: peca?.inventario ?? "",

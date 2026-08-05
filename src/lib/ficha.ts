@@ -1,6 +1,7 @@
 export interface FichaFicheiro {
   path: string;
   nome: string;
+  [chave: string]: string;
 }
 
 /** Lê a lista de ficheiros da ficha técnica, aceitando o formato antigo (1 ficheiro). */
