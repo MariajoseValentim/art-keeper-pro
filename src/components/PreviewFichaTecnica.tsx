@@ -45,29 +45,53 @@ async function miniaturasPdf(url: string): Promise<string[]> {
   return paginas;
 }
 
-const previewQuery = (path: string, pdf: boolean) => ({
+type Tipo = "pdf" | "word" | "texto" | "outro";
+
+function tipoDe(path: string): Tipo {
+  if (/\.pdf$/i.test(path)) return "pdf";
+  if (/\.docx?$/i.test(path)) return "word";
+  if (/\.(txt|md|csv|rtf)$/i.test(path)) return "texto";
+  return "outro";
+}
+
+async function htmlWord(url: string): Promise<string> {
+  const mammoth = await import("mammoth/mammoth.browser");
+  const resposta = await fetch(url);
+  const arrayBuffer = await resposta.arrayBuffer();
+  const { value } = await mammoth.convertToHtml({ arrayBuffer });
+  return value;
+}
+
+const previewQuery = (path: string, tipo: Tipo) => ({
   queryKey: ["ficha-tecnica-preview", path],
-  queryFn: async (): Promise<{ url: string | null; paginas: string[] }> => {
+  queryFn: async (): Promise<{ url: string | null; paginas: string[]; html: string | null; texto: string | null }> => {
     const { data, error } = await supabase.storage
       .from("documentos")
       .createSignedUrl(path, 60 * 60);
     if (error) throw error;
     const url = data?.signedUrl ?? null;
-    if (!url || !pdf) return { url, paginas: [] };
+    const vazio = { url, paginas: [] as string[], html: null, texto: null };
+    if (!url) return vazio;
     try {
-      return { url, paginas: await miniaturasPdf(url) };
+      if (tipo === "pdf") return { ...vazio, paginas: await miniaturasPdf(url) };
+      if (tipo === "word") return { ...vazio, html: await htmlWord(url) };
+      if (tipo === "texto") return { ...vazio, texto: await (await fetch(url)).text() };
     } catch {
-      return { url, paginas: [] };
+      return vazio;
     }
+    return vazio;
   },
   staleTime: 50 * 60 * 1000,
 });
 
 export function PreviewFichaTecnica({ path, nome }: { path: string; nome: string | null }) {
-  const pdf = /\.pdf$/i.test(path);
-  const { data, isLoading } = useQuery(previewQuery(path, pdf));
+  const tipo = tipoDe(path);
+  const pdf = tipo === "pdf";
+  const { data, isLoading } = useQuery(previewQuery(path, tipo));
   const rotulo = nome ?? "Documento da ficha técnica";
   const paginas = data?.paginas ?? [];
+  const html = data?.html ?? null;
+  const texto = data?.texto ?? null;
   const total = paginas.length;
   const [atual, setAtual] = useState(1);
   const [salto, setSalto] = useState("");
@@ -86,12 +110,26 @@ export function PreviewFichaTecnica({ path, nome }: { path: string; nome: string
 
   return (
     <div className="mt-4 space-y-3">
-      {pdf && isLoading ? (
+      {isLoading && tipo !== "outro" ? (
         <div className="frame-art flex h-40 items-center justify-center gap-2 rounded-lg">
           <Loader2 className="size-4 animate-spin text-accent" aria-hidden />
-          <span className="label-caps">A preparar miniaturas…</span>
+          <span className="label-caps">A preparar pré-visualização…</span>
         </div>
       ) : null}
+
+      {html ? (
+        <div
+          className="doc-preview frame-art max-h-[32rem] overflow-auto rounded-lg bg-background p-5 text-sm leading-relaxed text-foreground"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ) : null}
+
+      {texto ? (
+        <pre className="frame-art max-h-[32rem] overflow-auto rounded-lg bg-background p-5 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+          {texto}
+        </pre>
+      ) : null}
+
 
       {total ? (
         <>
