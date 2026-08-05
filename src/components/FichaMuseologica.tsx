@@ -208,18 +208,22 @@ export function FichaMuseologica({
               ))}
           </div>
 
-          {peca.ficha_tecnica || peca.ficha_tecnica_path ? (
+          {peca.ficha_tecnica || fichaFicheiros.length ? (
             <>
               <hr className="gilt-rule my-5" />
               {peca.ficha_tecnica ? (
                 <p className="text-sm whitespace-pre-line text-foreground">{peca.ficha_tecnica}</p>
               ) : null}
-              {peca.ficha_tecnica_path ? (
-                <PreviewFichaTecnica
-                  path={peca.ficha_tecnica_path}
-                  nome={peca.ficha_tecnica_nome}
-                />
-              ) : null}
+              {fichaFicheiros.map((f, i) => (
+                <div key={f.path} className={i > 0 ? "mt-6" : undefined}>
+                  {fichaFicheiros.length > 1 ? (
+                    <p className="label-caps mb-2">
+                      Documento {i + 1} de {fichaFicheiros.length}
+                    </p>
+                  ) : null}
+                  <PreviewFichaTecnica path={f.path} nome={f.nome} />
+                </div>
+              ))}
             </>
           ) : null}
         </header>
