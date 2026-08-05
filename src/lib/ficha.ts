@@ -14,8 +14,9 @@ export function lerFichaFicheiros(peca: {
     ? bruto
         .filter((i): i is Record<string, unknown> => typeof i === "object" && i !== null)
         .map((i) => ({
-          path: typeof i.path === "string" ? i.path : "",
-          nome: typeof i.nome === "string" && i.nome ? i.nome : "Documento",
+          path: typeof i["path"] === "string" ? (i["path"] as string) : "",
+          nome:
+            typeof i["nome"] === "string" && i["nome"] ? (i["nome"] as string) : "Documento",
         }))
         .filter((i) => i.path)
     : [];
