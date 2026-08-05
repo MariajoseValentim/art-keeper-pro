@@ -182,24 +182,9 @@ export function FichaMuseologica({
 
       {/* Ficha */}
       <div className="grid gap-6">
-        {peca.ficha_tecnica || peca.ficha_tecnica_path ? (
-          <section className="plate p-5 sm:p-6">
-            <h2 className="text-xl">Ficha técnica</h2>
-            <hr className="gilt-rule my-4" />
-            {peca.ficha_tecnica ? (
-              <p className="text-sm whitespace-pre-line text-foreground">{peca.ficha_tecnica}</p>
-            ) : null}
-            {peca.ficha_tecnica_path ? (
-              <PreviewFichaTecnica
-                path={peca.ficha_tecnica_path}
-                nome={peca.ficha_tecnica_nome}
-              />
-            ) : null}
-
-          </section>
-        ) : null}
         <header className="plate-gilt p-5 sm:p-6">
-
+          <p className="label-caps">Ficha técnica museológica</p>
+          <hr className="gilt-rule my-4" />
           <p className="label-caps">{peca.inventario ?? "Sem número de inventário"}</p>
           <h2 className="mt-2 text-3xl leading-tight sm:text-4xl">{peca.titulo}</h2>
           {peca.autor ? (
@@ -222,7 +207,23 @@ export function FichaMuseologica({
                 </span>
               ))}
           </div>
+
+          {peca.ficha_tecnica || peca.ficha_tecnica_path ? (
+            <>
+              <hr className="gilt-rule my-5" />
+              {peca.ficha_tecnica ? (
+                <p className="text-sm whitespace-pre-line text-foreground">{peca.ficha_tecnica}</p>
+              ) : null}
+              {peca.ficha_tecnica_path ? (
+                <PreviewFichaTecnica
+                  path={peca.ficha_tecnica_path}
+                  nome={peca.ficha_tecnica_nome}
+                />
+              ) : null}
+            </>
+          ) : null}
         </header>
+
 
         <Bloco titulo="Identificação">
           <Campo rotulo="Título" valor={peca.titulo} />
