@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 const TIPOS_FICHA =
-  ".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  ".pdf,.doc,.docx,.txt,.md,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv,application/rtf";
 
 function FichaTecnicaCampo({
   texto,
@@ -114,7 +114,7 @@ function FichaTecnicaCampo({
               ) : (
                 <Upload className="size-4" aria-hidden />
               )}
-              Carregar PDF / Word
+              Carregar PDF / Word / TXT
             </Button>
           </div>
         ) : null}
