@@ -1,0 +1,1 @@
+REVOKE SELECT (ficha_tecnica_ficheiros) ON public.pecas FROM anon;
