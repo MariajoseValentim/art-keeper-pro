@@ -185,11 +185,15 @@ function FichaPecaConteudo() {
       />
       )}
       <div className="mt-10">
+        <DossieCientifico pecaId={peca.id} titulo={peca.titulo} />
+      </div>
+      <div className="mt-10">
         <MediaPeca pecaId={peca.id} soLeitura={!isAdmin} />
       </div>
       <div className="mt-10">
         <DocumentosPeca pecaId={peca.id} soLeitura={!isAdmin} />
       </div>
+
     </AppShell>
   );
 }
