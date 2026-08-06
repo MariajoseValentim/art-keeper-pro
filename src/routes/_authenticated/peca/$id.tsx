@@ -11,6 +11,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { PecaForm, type PecaFormValues } from "@/components/PecaForm";
 import { MediaPeca } from "@/components/MediaPeca";
 import { DocumentosPeca } from "@/components/DocumentosPeca";
+import { DossieCientifico } from "@/components/DossieCientifico";
+
 import { FichaMuseologica } from "@/components/FichaMuseologica";
 import { supabase } from "@/integrations/supabase/client";
 import { categoriasQuery, pecaQuery } from "@/lib/queries";
