@@ -114,7 +114,7 @@ function FichaTecnicaCampo({
               ) : (
                 <Upload className="size-4" aria-hidden />
               )}
-              Carregar PDF / Word
+              Carregar PDF / Word / TXT
             </Button>
           </div>
         ) : null}
