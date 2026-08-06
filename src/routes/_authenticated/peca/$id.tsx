@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Printer } from "lucide-react";
+import { Printer, Trash2 } from "lucide-react";
 import { imprimirFicha } from "@/lib/documentos";
 
 import { AppShell, PageTitle } from "@/components/AppShell";
@@ -130,6 +130,18 @@ function FichaPecaConteudo() {
               >
                 Ver página pública
               </Link>
+            ) : null}
+            {isAdmin ? (
+              <button
+                type="button"
+                disabled={eliminar.isPending}
+                onClick={() => {
+                  if (confirm("Eliminar definitivamente esta peça?")) eliminar.mutate();
+                }}
+                className="inline-flex items-center gap-2 border border-destructive px-5 py-2.5 text-sm text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground disabled:opacity-50"
+              >
+                <Trash2 className="size-4" aria-hidden /> Eliminar peça
+              </button>
             ) : null}
           </div>
         }
