@@ -54,7 +54,14 @@ function Auth() {
     try {
       if (modo === "entrar") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (error.message.toLowerCase().includes("invalid login credentials")) {
+            throw new Error(
+              "Email ou palavra-passe incorretos. Se criou a conta com o Google, use o botão “Continuar com Google”.",
+            );
+          }
+          throw error;
+        }
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -64,7 +71,18 @@ function Auth() {
             data: { nome, apelido },
           },
         });
-        if (error) throw error;
+        if (error) {
+          if (
+            error.message.toLowerCase().includes("already registered") ||
+            error.message.toLowerCase().includes("already exists")
+          ) {
+            setModo("entrar");
+            throw new Error(
+              "Já existe uma conta com este email. Entre com a sua palavra-passe ou com o Google.",
+            );
+          }
+          throw error;
+        }
         if (!data.session) toast.info("Verifique o seu email para confirmar a conta.");
       }
     } catch (err) {
@@ -73,6 +91,7 @@ function Auth() {
       setOcupado(false);
     }
   }
+
 
   async function google() {
     try {
