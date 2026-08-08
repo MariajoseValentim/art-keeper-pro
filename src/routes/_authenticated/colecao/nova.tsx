@@ -89,7 +89,15 @@ return data;
       toast.success("Peça registada.");
       navigate({ to: "/peca/$id", params: { id: data.id } });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Não foi possível guardar."),
+    onError: (e) => {
+  const message =
+    e instanceof Error
+      ? e.message
+      : typeof e === "object" && e !== null && "message" in e
+        ? String(e.message)
+        : "Não foi possível guardar.";
+  toast.error(message);
+},
   });
 
   return (
