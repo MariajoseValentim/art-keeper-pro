@@ -6,7 +6,7 @@ import { ApenasEquipa } from "@/components/ApenasEquipa";
 import { PecaForm, type PecaFormValues } from "@/components/PecaForm";
 import { supabase } from "@/integrations/supabase/client";
 import { categoriasQuery } from "@/lib/queries";
-
+import { slugify } from "@/lib/collection";
 export const Route = createFileRoute("/_authenticated/colecao/nova")({
   head: () => ({
     meta: [
@@ -41,21 +41,48 @@ function NovaPecaConteudo() {
   const criar = useMutation({
     mutationFn: async (values: PecaFormValues) => {
       const { data: userData } = await supabase.auth.getUser();
-      const uid = userData.user?.id;
-      if (!uid) throw new Error("Sessão expirada.");
-      const { data, error } = await supabase
-        .from("pecas")
-        .insert({
-          ...values,
-          categoria_id: values.categoria_id || null,
-          data_aquisicao: values.data_aquisicao || null,
-          inventario: values.inventario || null,
-          user_id: uid,
-        })
-        .select("id")
-        .single();
-      if (error) throw error;
-      return data;
+const uid = userData.user?.id;
+
+if (!uid) throw new Error("Sessão expirada.");
+
+const baseSlug = slugify(values.titulo);
+
+const { data: existentes, error: slugError } = await supabase
+  .from("pecas")
+  .select("slug")
+  .eq("user_id", uid);
+
+if (slugError) throw slugError;
+
+const usados = new Set(
+  (existentes ?? [])
+    .map((p) => p.slug)
+    .filter((s): s is string => Boolean(s)),
+);
+
+let slug = baseSlug;
+let i = 2;
+
+while (usados.has(slug)) {
+  slug = `${baseSlug}-${i++}`;
+}
+
+const { data, error } = await supabase
+  .from("pecas")
+  .insert({
+    ...values,
+    slug,
+    categoria_id: values.categoria_id || null,
+    data_aquisicao: values.data_aquisicao || null,
+    inventario: values.inventario || null,
+    user_id: uid,
+  })
+  .select("id")
+  .single();
+
+if (error) throw error;
+
+return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["pecas"] });
